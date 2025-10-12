@@ -18,7 +18,11 @@ export function LoginButton() {
     setMessage("");
     try {
       const supabase = createBrowserClient();
-      const { error } = await supabase.auth.signInWithOtp({ email });
+      const redirectTo = `${window.location.origin}/auth/callback`;
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: redirectTo },
+      });
       if (error) throw error;
       setMessage("Magic Link gesendet. Bitte prüfe deine E-Mail.");
     } catch (err) {
@@ -33,7 +37,8 @@ export function LoginButton() {
     setMessage("");
     try {
       const supabase = createBrowserClient();
-      const { error } = await supabase.auth.signInWithOAuth({ provider });
+      const redirectTo = `${window.location.origin}/auth/callback`;
+      const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } });
       if (error) throw error;
     } catch (err) {
       setMessage(err?.message || "OAuth fehlgeschlagen");
@@ -45,7 +50,7 @@ export function LoginButton() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Login</Button>
+        <Button className="cursor-pointer">Login</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -57,12 +62,7 @@ export function LoginButton() {
             <Label htmlFor="email">E-Mail</Label>
             <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
           </div>
-          <Button type="submit" disabled={loading}>{loading ? "Sende…" : "Magic Link senden"}</Button>
-          <div className="text-center text-xs text-[var(--muted-foreground)]">oder</div>
-          <div className="flex gap-2">
-            <Button type="button" variant="secondary" className="w-full" onClick={() => signInWithOAuth("github")}>GitHub</Button>
-            <Button type="button" variant="secondary" className="w-full" onClick={() => signInWithOAuth("google")}>Google</Button>
-          </div>
+          <Button type="submit" disabled={loading}>{loading ? "Sende…" : "Login Link senden"}</Button>
           {message && <p className="text-sm text-[var(--muted-foreground)]">{message}</p>}
         </form>
       </DialogContent>
