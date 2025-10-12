@@ -1,9 +1,11 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/browserClient";
 
-export default function AuthCallback() {
+export const dynamic = "force-dynamic";
+
+function CallbackInner() {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -37,4 +39,11 @@ export default function AuthCallback() {
   );
 }
 
+export default function AuthCallback() {
+  return (
+    <Suspense fallback={<div className="mx-auto max-w-md px-4 py-16 text-center text-sm text-[var(--muted-foreground)]">Lade…</div>}>
+      <CallbackInner />
+    </Suspense>
+  );
+}
 
