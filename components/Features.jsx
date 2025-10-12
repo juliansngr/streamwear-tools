@@ -1,8 +1,17 @@
+"use client";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { BellRing, Bot, Gift, BarChart3, Bell, ChevronDown } from "lucide-react";
 
 export function Features() {
+  const handleGlow = (e) => {
+    const el = e.currentTarget;
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    el.style.setProperty("--x", `${x}px`);
+    el.style.setProperty("--y", `${y}px`);
+  };
   const chartData = [
     { label: "JAN", value: 45 },
     { label: "FEB", value: 92 },
@@ -22,8 +31,16 @@ export function Features() {
       {/* Bento Grid */}
       <div className="mt-10 grid auto-rows-[minmax(140px,auto)] grid-cols-1 gap-6 sm:auto-rows-[minmax(150px,auto)] sm:grid-cols-6">
         {/* Alertbox (groß) */}
-        <Card className="relative overflow-hidden sm:col-span-3 sm:row-span-2 p-6 flex flex-col gap-4">
+        <Card onMouseMove={handleGlow} className="group relative overflow-hidden sm:col-span-3 sm:row-span-2 p-6 flex flex-col gap-4">
           <div className="absolute inset-0 bg-gradient-hero opacity-25" />
+          <div
+            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 mix-blend-screen"
+            style={{
+              background:
+                "radial-gradient(720px 720px at var(--x) var(--y), rgba(145,70,255,0.14), transparent 60%), radial-gradient(560px 560px at var(--x) var(--y), rgba(255,255,255,0.08), transparent 62%), radial-gradient(1100px 640px at var(--x) var(--y), rgba(145,70,255,0.05), transparent 80%)",
+            }}
+          />
+          <span className="absolute right-4 top-4 z-10 inline-block h-2.5 w-2.5 rounded-full bg-[#22c55e] shadow-[0_0_0_4px_rgba(34,197,94,0.18)]" title="Verfügbar" />
           <div className="relative flex items-center gap-3">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-[var(--secondary)]">
               <BellRing className="h-5 w-5" />
@@ -102,8 +119,16 @@ export function Features() {
         </Card>
 
         {/* Analytics (groß) */}
-        <Card className="relative overflow-hidden sm:col-span-3 sm:row-span-2 p-6 flex flex-col gap-4">
+        <Card onMouseMove={handleGlow} className="group relative overflow-hidden sm:col-span-3 sm:row-span-2 p-6 flex flex-col gap-4">
           <div className="absolute inset-0 bg-gradient-hero opacity-20" />
+          <div
+            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 mix-blend-screen"
+            style={{
+              background:
+                "radial-gradient(720px 720px at var(--x) var(--y), rgba(145,70,255,0.14), transparent 60%), radial-gradient(560px 560px at var(--x) var(--y), rgba(255,255,255,0.08), transparent 62%), radial-gradient(1100px 640px at var(--x) var(--y), rgba(145,70,255,0.05), transparent 80%)",
+            }}
+          />
+          <span className="absolute right-4 top-4 z-10 inline-block h-2.5 w-2.5 rounded-full bg-[#eab308] shadow-[0_0_0_4px_rgba(234,179,8,0.18)]" title="Coming soon" />
           <div className="relative flex items-center gap-3">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-[var(--secondary)]">
               <BarChart3 className="h-5 w-5" />
@@ -140,14 +165,22 @@ export function Features() {
         </Card>
 
         {/* Chatbot */}
-        <Card className="relative overflow-hidden sm:col-span-2 sm:row-span-1 p-6">
+        <Card onMouseMove={handleGlow} className="group relative overflow-hidden sm:col-span-2 sm:row-span-1 p-6">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 mix-blend-screen"
+            style={{
+              background:
+                "radial-gradient(520px 520px at var(--x) var(--y), rgba(145,70,255,0.12), transparent 60%), radial-gradient(380px 380px at var(--x) var(--y), rgba(255,255,255,0.06), transparent 62%)",
+            }}
+          />
+          <span className="absolute right-4 top-4 z-10 inline-block h-2.5 w-2.5 rounded-full bg-[#eab308] shadow-[0_0_0_4px_rgba(234,179,8,0.18)]" title="Coming soon" />
           <div className="relative flex items-center gap-3">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-[var(--secondary)]">
               <Bot className="h-5 w-5" />
             </span>
             <h3 className="text-base font-semibold">streamwear. Chatbot</h3>
           </div>
-          <p className="mt-2 text-sm text-[var(--muted-foreground)]">Beantwortet Fragen zu Größen, Versand, Drops – 24/7.</p>
+          <p className="mt-2 text-sm text-[var(--muted-foreground)]">Nimmt dir Arbeit ab: reagiert auf <span className="font-semibold">!merch</span> mit deinem Shop‑Link.</p>
           {/* Twitch-like Chat Preview */}
           <div className="mt-3 relative rounded-[var(--radius-sm)] border border-default bg-[color-mix(in_hsl,var(--muted),black_4%)] p-3 h-28 overflow-hidden">
             <div className="text-[10px] uppercase tracking-wide text-[var(--muted-foreground)]">Twitch Chat</div>
@@ -191,7 +224,15 @@ export function Features() {
         </Card>
 
         {/* Giveaways */}
-        <Card className="relative overflow-hidden sm:col-span-2 sm:row-span-1 p-6">
+        <Card onMouseMove={handleGlow} className="group relative overflow-hidden sm:col-span-2 sm:row-span-1 p-6">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 mix-blend-screen"
+            style={{
+              background:
+                "radial-gradient(520px 520px at var(--x) var(--y), rgba(145,70,255,0.12), transparent 60%), radial-gradient(380px 380px at var(--x) var(--y), rgba(255,255,255,0.06), transparent 62%)",
+            }}
+          />
+          <span className="absolute right-4 top-4 z-10 inline-block h-2.5 w-2.5 rounded-full bg-[#eab308] shadow-[0_0_0_4px_rgba(234,179,8,0.18)]" title="Coming soon" />
           <div className="relative flex items-center gap-3">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-[var(--secondary)]">
               <Gift className="h-5 w-5" />
@@ -202,7 +243,7 @@ export function Features() {
           {/* Giveaway Preview */}
           <div className="mt-3 rounded-[var(--radius-sm)] border border-default bg-[color-mix(in_hsl,var(--muted),black_4%)] p-3">
             <div className="flex items-center justify-between text-sm">
-              <div className="font-medium">Hoodie Drop Giveaway</div>
+              <div className="font-medium">Hoodie Giveaway</div>
               <div className="rounded-md bg-black/30 px-2 py-0.5 text-xs ring-1 ring-black/40">Ends in 02:14</div>
             </div>
             <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-black/30 ring-1 ring-black/30">
@@ -216,14 +257,22 @@ export function Features() {
         </Card>
 
         {/* Realtime Notifications */}
-        <Card className="relative overflow-hidden sm:col-span-2 sm:row-span-1 p-6">
+        <Card onMouseMove={handleGlow} className="group relative overflow-hidden sm:col-span-2 sm:row-span-1 p-6">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 mix-blend-screen"
+            style={{
+              background:
+                "radial-gradient(520px 520px at var(--x) var(--y), rgba(145,70,255,0.12), transparent 60%), radial-gradient(380px 380px at var(--x) var(--y), rgba(255,255,255,0.06), transparent 62%)",
+            }}
+          />
+          <span className="absolute right-4 top-4 z-10 inline-block h-2.5 w-2.5 rounded-full bg-[#eab308] shadow-[0_0_0_4px_rgba(234,179,8,0.18)]" title="Coming soon" />
           <div className="relative flex items-center gap-3">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-[var(--secondary)]">
               <Bell className="h-5 w-5" />
             </span>
             <h3 className="text-base font-semibold">Realtime Notifications</h3>
           </div>
-          <p className="mt-2 text-sm text-[var(--muted-foreground)]">Benachrichtigungen für Verkäufe, Low‑Stock, Payouts & mehr.</p>
+          <p className="mt-2 text-sm text-[var(--muted-foreground)]">Benachrichtigungen für Verkäufe, Payouts & mehr.</p>
           {/* Notifications Preview */}
           <div className="mt-3 space-y-2">
             {[
