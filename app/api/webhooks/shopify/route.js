@@ -6,6 +6,7 @@ const SHOPIFY_DOMAIN = process.env.SHOPIFY_STORE_DOMAIN;
 const SHOPIFY_ACCESS_TOKEN = process.env.SHOPIFY_ACCESS_TOKEN;
 const SHOPIFY_WEBHOOK_SECRET = process.env.SHOPIFY_WEBHOOK_SECRET;
 const ALERT_TOPIC_PREFIX = process.env.ALERT_TOPIC_PREFIX || "streamwear-alerts";
+const LOG_SHOPIFY = process.env.LOG_SHOPIFY_WEBHOOKS === "1";
 
 async function verifyShopifyHmac(request) {
   const rawBody = await request.text();
@@ -54,6 +55,19 @@ async function broadcastAlert({ uuid, payload }) {
 export async function POST(request) {
   // Verify HMAC
   const { ok, rawBody } = await verifyShopifyHmac(request);
+  if (LOG_SHOPIFY) {
+    const topic = request.headers.get("x-shopify-topic");
+    const shop = request.headers.get("x-shopify-shop-domain");
+    const hmac = request.headers.get("x-shopify-hmac-sha256");
+    console.log("[shopify:webhook]", {
+      topic,
+      shop,
+      hasHmac: Boolean(hmac),
+      ok,
+      rawLength: rawBody?.length || 0,
+      rawSample: typeof rawBody === "string" ? rawBody.slice(0, 400) : undefined,
+    });
+  }
   if (!ok) return NextResponse.json({ error: "invalid signature" }, { status: 401 });
 
   let order;
