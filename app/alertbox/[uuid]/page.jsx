@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/browserClient";
+import { OverlayAlert } from "@/components/alert/OverlayAlert";
 
 export default function AlertboxPage() {
   const { uuid } = useParams();
@@ -37,31 +38,23 @@ export default function AlertboxPage() {
   }, [uuid]);
 
   return (
-    <div className="fixed inset-0 flex items-end justify-start p-10">
-      {last && (
-        <div className="relative isolate p-0">
-          <div className="overflow-hidden rounded-lg">
-            <video
-              key={last._key}
-              src="/alertbox/alert_1.webm"
-              autoPlay
-              playsInline
-              className="block h-auto w-[420px] sm:w-[520px]"
-            />
-          </div>
-          <div className="mt-2 px-1 py-1">
-            <div className="text-sm font-semibold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
-              {last.product_title || "Neuer Kauf"}
-            </div>
-            <div className="text-xs text-white/95 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
-              {last.variant_title ? `${last.variant_title} · ` : ""}
-              {last.quantity ? `${last.quantity} × ` : ""}
-              {last.price ? `${last.price}` : ""} {last.currency || ""}
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    <>
+      <div className="fixed inset-0 flex items-end justify-start p-10">
+        {last && (
+          <OverlayAlert
+            videoKey={last._key}
+            videoSrc="/alertbox/alert_1.webm"
+            title={last.product_title || "Neuer Kauf"}
+            variantTitle={last.variant_title}
+            quantity={last.quantity}
+            price={last.price}
+            currency={last.currency}
+            widthPx={520}
+            animDurationMs={8000}
+          />
+        )}
+      </div>
+    </>
   );
 }
 

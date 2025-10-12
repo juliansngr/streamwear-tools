@@ -1,56 +1,31 @@
 "use client";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { BellRing, BarChart3, Bot, Gift, Bell } from "lucide-react";
-
-const NAV_ITEMS = [
-  { key: "alertbox", label: "Alertbox", Icon: BellRing },
-  { key: "analytics", label: "Analytics", Icon: BarChart3 },
-  { key: "chatbot", label: "Chatbot", Icon: Bot },
-  { key: "giveaways", label: "Giveaways", Icon: Gift },
-  { key: "notifications", label: "Benachrichtigungen", Icon: Bell },
-];
+import { OverlayAlert } from "@/components/alert/OverlayAlert";
 
 export default function Dashboard() {
-  const [active, setActive] = useState("alertbox");
-
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
-      <div className="flex gap-6">
-        {/* Sidebar */}
-        <aside className="sticky top-4 h-fit w-56 shrink-0 rounded-[var(--radius-md)] border border-default bg-[color-mix(in_hsl,var(--muted),black_6%)] p-2">
-          <div className="px-2 py-2 text-xs uppercase tracking-wide text-[var(--muted-foreground)]">Features</div>
-          <nav className="grid gap-1">
-            {NAV_ITEMS.map(({ key, label, Icon }) => {
-              const isActive = key === active;
-              return (
-                <Button
-                  key={key}
-                  variant="ghost"
-                  className={`justify-start gap-2 w-full ${
-                    isActive ? "bg-[var(--muted)]/60 ring-1 ring-[#9146ff]/30" : ""
-                  }`}
-                  onClick={() => setActive(key)}
-                >
-                  <Icon className="h-4 w-4" />
-                  {label}
-                </Button>
-              );
-            })}
-          </nav>
-        </aside>
-
-        {/* Main */}
-        <main className="flex-1">
-          {active === "alertbox" && <SectionAlertbox />}
-          {active === "analytics" && <SectionAnalytics />}
-          {active === "chatbot" && <SectionChatbot />}
-          {active === "giveaways" && <SectionGiveaways />}
-          {active === "notifications" && <SectionNotifications />}
-        </main>
-      </div>
-    </div>
+    <>
+      <SectionTitle title="Dashboard" subtitle="Kurzer Überblick und Schnellstart. (Dummy Inhalt)" />
+      <Card className="p-6 grid gap-6">
+        <div>Hier kommen Kennzahlen, zuletzt gesendete Alerts und Quick Actions hin.</div>
+        <div>
+          <div className="mb-2 text-sm text-[var(--muted-foreground)]">Alert Vorschau (loop, Dummy)</div>
+          <OverlayAlert
+            videoSrc="/alertbox/alert_1.webm"
+            title="Creator Hoodie"
+            variantTitle="Größe L"
+            quantity={1}
+            price="€59,00"
+            currency=""
+            widthPx={360}
+            animDurationMs={8000}
+            loop={true}
+            muted={true}
+            videoKey="dummy"
+          />
+        </div>
+      </Card>
+    </>
   );
 }
 
