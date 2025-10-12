@@ -56,8 +56,9 @@ async function fetchCollectionsForProduct(productId) {
   const collectionIds = collects?.map((c) => c.collection_id) || [];
   dbg("fetch:collects:ids", { count: collectionIds.length, sample: collectionIds.slice(0, 5) });
   if (collectionIds.length === 0) return [];
-  const idsParam = collectionIds.map((id) => `ids[]=${id}`).join("&");
-  const colsRes = await fetch(`${base}/custom_collections.json?${idsParam}`, { headers, cache: "no-store" });
+  // Shopify erwartet eine komma-separierte Liste in "ids"
+  const idsParam = collectionIds.join(",");
+  const colsRes = await fetch(`${base}/custom_collections.json?ids=${idsParam}`, { headers, cache: "no-store" });
   dbg("fetch:collections:status", { ok: colsRes.ok, status: colsRes.status });
   if (!colsRes.ok) return [];
   const { custom_collections } = await colsRes.json();
