@@ -1,26 +1,83 @@
 @import "tailwindcss";
+@plugin "tailwindcss-animate";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Grundfarben (angelehnt an streamwear.shop, leicht anpassbar) */
+  --background: #0b0b0f; /* sehr dunkles Grau/Schwarz */
+  --foreground: #f6f7f9; /* sehr helles Grau */
+  --muted: #0f1116;
+  --muted-foreground: #a1a6b0;
+  --card: #0c0e13;
+  --card-foreground: #e7e9ee;
+
+  /* Akzent (bläulich-violett) */
+  --primary: #9146ff;
+  --primary-foreground: #ffffff;
+
+  /* Sekundär / Akzente */
+  --secondary: #1a1f2e;
+  --secondary-foreground: #e7e9ee;
+
+  /* Ringe/Border */
+  --border: #1e2230;
+  --ring: #9146ff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #171717;
+    --muted: #f2f4f7;
+    --muted-foreground: #5b616e;
+    --card: #ffffff;
+    --card-foreground: #171717;
+    --primary: #9146ff;
+    --primary-foreground: #ffffff;
+    --secondary: #eef1ff;
+    --secondary-foreground: #111321;
+    --border: #e6e8ef;
+    --ring: #9146ff;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Modernes Gradient-Backdrop für Hero/Highlights */
+.bg-gradient-hero {
+  background-image: radial-gradient(1200px 600px at top center, rgba(145, 70, 255, 0.18), transparent 60%),
+    radial-gradient(800px 400px at 20% 20%, rgba(145, 70, 255, 0.15), transparent 60%),
+    radial-gradient(800px 400px at 80% 30%, rgba(145, 70, 255, 0.12), transparent 60%);
+}
+
+.ring-primary {
+  --tw-ring-color: var(--ring);
+}
+
+.border-default {
+  border-color: var(--border);
 }
