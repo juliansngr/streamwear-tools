@@ -54,19 +54,6 @@ export default function AlertboxPage() {
             uuid={uuid}
           />
         )}
-                    <OverlayAlert
-              videoSrc="/alertbox/alert_1.webm"
-              title="Creator Hoodie"
-              variantTitle="Größe L"
-              quantity={1}
-              price="€59,00"
-              currency=""
-              widthPx={520}
-              animDurationMs={8000}
-              loop={true}
-              muted={true}
-              videoKey="preview"
-            />
       </div>
     </>
   );
