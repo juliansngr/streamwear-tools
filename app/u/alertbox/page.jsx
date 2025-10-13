@@ -131,7 +131,7 @@ export default function AlertboxSettings() {
           {overlayUrl || "Noch kein Link – oben zuerst verbinden."}
         </span>
       </li>
-      <li>Breite: 1000 px (empfohlen). Höhe: 1000 px (empfohlen).</li>
+      <li>Breite: 800 px (empfohlen). Höhe: 800 px (empfohlen).</li>
       <li>Optional: Quelle bei Nicht-Sichtbarkeit deaktivieren, um CPU zu sparen.</li>
       <li>Nach Änderungen am Text die Quelle/Szene kurz neu laden, um Updates zu sehen.</li>
     </ol>
