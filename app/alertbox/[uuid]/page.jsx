@@ -39,7 +39,7 @@ export default function AlertboxPage() {
 
   return (
     <>
-      <div className="fixed inset-0 flex items-end justify-start p-10">
+      <div className="h-dvh w-dvw flex items-center justify-center p-10">
         {last && (
           <OverlayAlert
             videoKey={last._key}
@@ -51,8 +51,22 @@ export default function AlertboxPage() {
             currency={last.currency}
             widthPx={520}
             animDurationMs={8000}
+            uuid={uuid}
           />
         )}
+                    <OverlayAlert
+              videoSrc="/alertbox/alert_1.webm"
+              title="Creator Hoodie"
+              variantTitle="Größe L"
+              quantity={1}
+              price="€59,00"
+              currency=""
+              widthPx={520}
+              animDurationMs={8000}
+              loop={true}
+              muted={true}
+              videoKey="preview"
+            />
       </div>
     </>
   );
