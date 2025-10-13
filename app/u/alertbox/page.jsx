@@ -116,6 +116,24 @@ export default function AlertboxSettings() {
             />
           </div>
         </div>
+
+<div className="grid gap-2">
+  <label className="text-sm">Anleitung</label>
+  <div className="rounded-[var(--radius-md)] border border-default p-4 bg-[color-mix(in_hsl,var(--muted),black_4%)]">
+    <ol className="list-decimal pl-5 space-y-2 text-sm">
+      <li>Öffne OBS und füge eine neue Browser-Quelle hinzu.</li>
+      <li>
+        Setze die URL auf
+        <span className="ml-1 font-mono px-1.5 py-0.5 rounded bg-[color-mix(in_hsl,var(--muted),black_4%)] border border-default break-all inline-block align-baseline">
+          {overlayUrl || "Noch kein Link – oben zuerst verbinden."}
+        </span>
+      </li>
+      <li>Breite: 1000 px (empfohlen). Höhe: 1000 px (empfohlen).</li>
+      <li>Optional: Quelle bei Nicht-Sichtbarkeit deaktivieren, um CPU zu sparen.</li>
+      <li>Nach Änderungen am Text die Quelle/Szene kurz neu laden, um Updates zu sehen.</li>
+    </ol>
+  </div>
+</div>
       </Card>
     </>
   );

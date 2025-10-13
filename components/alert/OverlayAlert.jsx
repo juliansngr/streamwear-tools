@@ -82,7 +82,7 @@ export function OverlayAlert({
         >
           <div className="flex flex-col items-center justify-center max-w-lg text-6xl -mt-5 font-semibold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
             {subtitleToUse && (
-              <span className="text-5xl text-center font-normal mb-4">{subtitleToUse}</span>
+              <span className="text-5xl text-center text-white font-normal mb-4">{subtitleToUse}</span>
             )}
             {/* <span>{quantity ? `${quantity} × ` : ""}{title}</span> */}
           </div>
