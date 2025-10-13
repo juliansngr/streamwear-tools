@@ -13,6 +13,7 @@ export default function AlertboxSettings() {
   const [alertboxSubtitle, setAlertboxSubtitle] = useState("");
   const [userId, setUserId] = useState("");
   const [previewKey, setPreviewKey] = useState(0);
+  const [uuid, setUuid] = useState("");
 
   useEffect(() => {
     const load = async () => {
@@ -30,10 +31,11 @@ export default function AlertboxSettings() {
           .limit(1)
           .maybeSingle();
         if (error) return;
-        const uuid = data?.uuid;
-        if (uuid) {
+        const uuidVal = data?.uuid;
+        if (uuidVal) {
           const origin = typeof window !== "undefined" ? window.location.origin : "";
-          setOverlayUrl(`${origin}/alertbox/${uuid}`);
+          setOverlayUrl(`${origin}/alertbox/${uuidVal}`);
+          setUuid(uuidVal);
         }
 
         const { data: alertboxSubtitle, error: alertboxSubtitleError } = await supabase
@@ -113,6 +115,7 @@ export default function AlertboxSettings() {
               loop={true}
               muted={true}
               videoKey="preview"
+              uuid={uuid}
             />
           </div>
         </div>

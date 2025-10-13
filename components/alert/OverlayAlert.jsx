@@ -4,11 +4,6 @@ import { createBrowserClient } from "@/lib/supabase/browserClient";
 
 export function OverlayAlert({
   videoSrc = "/alertbox/alert_1.webm",
-  title = "Neuer Kauf",
-  variantTitle,
-  quantity,
-  price,
-  currency,
   widthPx = 520,
   animDurationMs = 8000,
   loop = false,
@@ -24,30 +19,18 @@ export function OverlayAlert({
   useEffect(() => {
     const load = async () => {
       try {
-        const supabase = createBrowserClient();
-        let text = "";
-        if (uuid) {
-          const { data, error } = await supabase
-            .from("shopify_connectors")
-            .select("alertbox_text")
-            .eq("uuid", uuid)
-            .limit(1)
-            .maybeSingle();
-          if (!error) text = data?.alertbox_text || "";
-        } else {
-          const { data: userData } = await supabase.auth.getUser();
-          const userId = userData?.user?.id;
-          if (userId) {
-            const { data, error } = await supabase
-              .from("shopify_connectors")
-              .select("alertbox_text")
-              .eq("user_id", userId)
-              .limit(1)
-              .maybeSingle();
-            if (!error) text = data?.alertbox_text || "";
-          }
+        if (!uuid) {
+          setFetchedSubtitle("");
+          return;
         }
-        setFetchedSubtitle(text);
+        const supabase = createBrowserClient();
+        const { data, error } = await supabase
+          .from("shopify_connectors")
+          .select("alertbox_text")
+          .eq("uuid", uuid)
+          .limit(1)
+          .maybeSingle();
+        setFetchedSubtitle(!error ? (data?.alertbox_text || "") : "");
       } catch {
         setFetchedSubtitle("");
       }
