@@ -5,10 +5,13 @@ import { createBrowserClient } from "@/lib/supabase/browserClient";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { OverlayAlert } from "@/components/alert/OverlayAlert";
+import { toast } from "sonner";
 
 export default function AlertboxSettings() {
   const [overlayUrl, setOverlayUrl] = useState("");
   const [loading, setLoading] = useState(false);
+  const [alertboxSubtitle, setAlertboxSubtitle] = useState("");
+  const [userId, setUserId] = useState("");
 
   useEffect(() => {
     const load = async () => {
@@ -16,12 +19,13 @@ export default function AlertboxSettings() {
         setLoading(true);
         const supabase = createBrowserClient();
         const { data: userData } = await supabase.auth.getUser();
-        const userId = userData?.user?.id;
-        if (!userId) return;
+        const currentUserId = userData?.user?.id;
+        if (!currentUserId) return;
+        setUserId(currentUserId);
         const { data, error } = await supabase
           .from("shopify_connectors")
           .select("uuid")
-          .eq("user_id", userId)
+          .eq("user_id", currentUserId)
           .limit(1)
           .maybeSingle();
         if (error) return;
@@ -30,6 +34,15 @@ export default function AlertboxSettings() {
           const origin = typeof window !== "undefined" ? window.location.origin : "";
           setOverlayUrl(`${origin}/alertbox/${uuid}`);
         }
+
+        const { data: alertboxSubtitle, error: alertboxSubtitleError } = await supabase
+          .from("shopify_connectors")
+          .select("alertbox_text")
+          .eq("user_id", currentUserId)
+          .limit(1)
+          .maybeSingle();
+        if (alertboxSubtitleError) return;
+        setAlertboxSubtitle(alertboxSubtitle?.alertbox_text);
       } finally {
         setLoading(false);
       }
@@ -43,6 +56,26 @@ export default function AlertboxSettings() {
       await navigator.clipboard.writeText(overlayUrl);
     } catch {}
   };
+
+  const saveAlertboxSubtitle = async () => {
+    if (!alertboxSubtitle) return;
+    try {
+      const supabase = createBrowserClient();
+      const { error } = await supabase
+        .from("shopify_connectors")
+        .update({ alertbox_text: alertboxSubtitle })
+        .eq("user_id", userId)
+        .limit(1)
+        .maybeSingle();
+      if (error) {
+        toast.error("Fehler beim Speichern des Alertbox-Texts");
+        return;
+      }
+      toast.success("Alertbox-Text gespeichert");
+    } catch {
+      toast.error("Fehler beim Speichern des Alertbox-Texts");
+    }
+  };
   return (
     <>
       <SectionTitle title="Alertbox" subtitle="Einstellungen für Overlays (Dummy)." />
@@ -52,6 +85,14 @@ export default function AlertboxSettings() {
           <div className="flex gap-2">
             <Input value={overlayUrl} readOnly placeholder={loading ? "Lade…" : "Kein Link gefunden"} />
             <Button onClick={copyUrl} disabled={!overlayUrl}>Kopieren</Button>
+          </div>
+        </div>
+        <div className="grid gap-2">
+          <label className="text-sm">Dein Alertbox-Text</label>
+          <p className="text-xs text-[var(--muted-foreground)] max-w-lg">{`Verwende {{TwitchUserName}} in deinem Text, um den Namen des Twitch-Users anzuzeigen, sollte er bei der Bestellung angegeben worden sein.`}</p>
+          <div className="flex gap-2">
+            <Input value={alertboxSubtitle} onChange={(e) => setAlertboxSubtitle(e.target.value)} placeholder={loading ? "Lade…" : "Kein Link gefunden"} />
+            <Button onClick={saveAlertboxSubtitle} disabled={!alertboxSubtitle}>Speichern</Button>
           </div>
         </div>
 
@@ -70,6 +111,7 @@ export default function AlertboxSettings() {
               loop={true}
               muted={true}
               videoKey="preview"
+              subtitle={alertboxSubtitle}
             />
           </div>
         </div>
