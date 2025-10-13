@@ -1,4 +1,6 @@
 "use client";
+import { useEffect, useState } from "react";
+import { createBrowserClient } from "@/lib/supabase/browserClient";
 
 export function OverlayAlert({
   videoSrc = "/alertbox/alert_1.webm",
@@ -13,10 +15,50 @@ export function OverlayAlert({
   muted = false,
   videoKey,
   subtitle,
-  userName
+  userName,
+  uuid
 }) {
+  const [fetchedSubtitle, setFetchedSubtitle] = useState("");
   const nameToUse = userName ? userName : "Anonymous";
-  const subtitleToUse = subtitle ? subtitle.replace(/{{\s*TwitchUserName\s*}}/g, nameToUse) : "";
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const supabase = createBrowserClient();
+        let text = "";
+        if (uuid) {
+          const { data, error } = await supabase
+            .from("shopify_connectors")
+            .select("alertbox_text")
+            .eq("uuid", uuid)
+            .limit(1)
+            .maybeSingle();
+          if (!error) text = data?.alertbox_text || "";
+        } else {
+          const { data: userData } = await supabase.auth.getUser();
+          const userId = userData?.user?.id;
+          if (userId) {
+            const { data, error } = await supabase
+              .from("shopify_connectors")
+              .select("alertbox_text")
+              .eq("user_id", userId)
+              .limit(1)
+              .maybeSingle();
+            if (!error) text = data?.alertbox_text || "";
+          }
+        }
+        setFetchedSubtitle(text);
+      } catch {
+        setFetchedSubtitle("");
+      }
+    };
+    load();
+  }, [uuid]);
+
+  const rawSubtitle = subtitle ?? fetchedSubtitle;
+  const subtitleToUse = rawSubtitle
+    ? rawSubtitle.replace(/{{\s*TwitchUserName\s*}}/g, nameToUse)
+    : "";
 
 
   return (
@@ -39,7 +81,9 @@ export function OverlayAlert({
           style={{ ["--dur"]: `${animDurationMs}ms`, ["--iter"]: loop ? "infinite" : "1" }}
         >
           <div className="flex flex-col items-center justify-center max-w-lg text-6xl -mt-5 font-semibold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
-            <span className="text-5xl text-center font-normal mb-4">{subtitleToUse}</span>
+            {subtitleToUse && (
+              <span className="text-5xl text-center text-white font-normal mb-4">{subtitleToUse}</span>
+            )}
             {/* <span>{quantity ? `${quantity} × ` : ""}{title}</span> */}
           </div>
         </div>

@@ -12,6 +12,7 @@ export default function AlertboxSettings() {
   const [loading, setLoading] = useState(false);
   const [alertboxSubtitle, setAlertboxSubtitle] = useState("");
   const [userId, setUserId] = useState("");
+  const [previewKey, setPreviewKey] = useState(0);
 
   useEffect(() => {
     const load = async () => {
@@ -58,7 +59,6 @@ export default function AlertboxSettings() {
   };
 
   const saveAlertboxSubtitle = async () => {
-    if (!alertboxSubtitle) return;
     try {
       const supabase = createBrowserClient();
       const { error } = await supabase
@@ -72,6 +72,7 @@ export default function AlertboxSettings() {
         return;
       }
       toast.success("Alertbox-Text gespeichert");
+      setPreviewKey((k) => k + 1);
     } catch {
       toast.error("Fehler beim Speichern des Alertbox-Texts");
     }
@@ -92,7 +93,7 @@ export default function AlertboxSettings() {
           <p className="text-xs text-[var(--muted-foreground)] max-w-lg">{`Verwende {{TwitchUserName}} in deinem Text, um den Namen des Twitch-Users anzuzeigen, sollte er bei der Bestellung angegeben worden sein.`}</p>
           <div className="flex gap-2">
             <Input value={alertboxSubtitle} onChange={(e) => setAlertboxSubtitle(e.target.value)} placeholder={loading ? "Lade…" : "Kein Link gefunden"} />
-            <Button onClick={saveAlertboxSubtitle} disabled={!alertboxSubtitle}>Speichern</Button>
+            <Button onClick={saveAlertboxSubtitle}>Speichern</Button>
           </div>
         </div>
 
@@ -100,6 +101,7 @@ export default function AlertboxSettings() {
           <label className="text-sm">Vorschau</label>
           <div className="rounded-[var(--radius-md)] border border-default p-3 pb-12 bg-[color-mix(in_hsl,var(--muted),black_4%)]">
             <OverlayAlert
+              key={previewKey}
               videoSrc="/alertbox/alert_1.webm"
               title="Creator Hoodie"
               variantTitle="Größe L"
@@ -111,10 +113,27 @@ export default function AlertboxSettings() {
               loop={true}
               muted={true}
               videoKey="preview"
-              subtitle={alertboxSubtitle}
             />
           </div>
         </div>
+
+<div className="grid gap-2">
+  <label className="text-sm">Anleitung</label>
+  <div className="rounded-[var(--radius-md)] border border-default p-4 bg-[color-mix(in_hsl,var(--muted),black_4%)]">
+    <ol className="list-decimal pl-5 space-y-2 text-sm">
+      <li>Öffne OBS und füge eine neue Browser-Quelle hinzu.</li>
+      <li>
+        Setze die URL auf
+        <span className="ml-1 font-mono px-1.5 py-0.5 rounded bg-[color-mix(in_hsl,var(--muted),black_4%)] border border-default break-all inline-block align-baseline">
+          {overlayUrl || "Noch kein Link – oben zuerst verbinden."}
+        </span>
+      </li>
+      <li>Breite: 1000 px (empfohlen). Höhe: 1000 px (empfohlen).</li>
+      <li>Optional: Quelle bei Nicht-Sichtbarkeit deaktivieren, um CPU zu sparen.</li>
+      <li>Nach Änderungen am Text die Quelle/Szene kurz neu laden, um Updates zu sehen.</li>
+    </ol>
+  </div>
+</div>
       </Card>
     </>
   );
