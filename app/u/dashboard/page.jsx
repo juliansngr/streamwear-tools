@@ -1,29 +1,31 @@
 "use client";
 import { Card } from "@/components/ui/card";
-import { OverlayAlert } from "@/components/alert/OverlayAlert";
 
 export default function Dashboard() {
   return (
     <>
       <SectionTitle title="Dashboard" subtitle="Kurzer Überblick und Schnellstart. (Dummy Inhalt)" />
-      <Card className="p-6 grid gap-6">
-        <div>Hier kommen Kennzahlen, zuletzt gesendete Alerts und Quick Actions hin.</div>
-        <div>
-          <div className="mb-2 text-sm text-[var(--muted-foreground)]">Alert Vorschau (loop, Dummy)</div>
-          <OverlayAlert
-            videoSrc="/alertbox/alert_1.webm"
-            title="Creator Hoodie"
-            variantTitle="Größe L"
-            quantity={1}
-            price="€59,00"
-            currency=""
-            widthPx={360}
-            animDurationMs={8000}
-            loop={true}
-            muted={true}
-            videoKey="dummy"
-          />
-        </div>
+      <div className="grid gap-6 sm:grid-cols-3">
+        <Card className="p-6">
+          <div className="text-sm text-[var(--muted-foreground)]">Umsatz (7T)</div>
+          <div className="mt-1 text-2xl font-semibold">€ 3.420</div>
+        </Card>
+        <Card className="p-6">
+          <div className="text-sm text-[var(--muted-foreground)]">Bestellungen (7T)</div>
+          <div className="mt-1 text-2xl font-semibold">128</div>
+        </Card>
+        <Card className="p-6">
+          <div className="text-sm text-[var(--muted-foreground)]">Conversion Rate</div>
+          <div className="mt-1 text-2xl font-semibold">2,9%</div>
+        </Card>
+      </div>
+      <Card className="mt-6 p-6">
+        <div className="mb-3 text-sm text-[var(--muted-foreground)]">Zuletzt passiert</div>
+        <ul className="space-y-2 text-sm">
+          <li>• Neuer Drop geplant – „Creator Hoodie v2“</li>
+          <li>• 12 neue Bestellungen seit gestern</li>
+          <li>• Giveaway „Hoodie“ nähert sich 60%</li>
+        </ul>
       </Card>
     </>
   );
