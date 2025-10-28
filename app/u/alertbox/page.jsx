@@ -81,7 +81,12 @@ export default function AlertboxSettings() {
   };
   return (
     <>
-      <SectionTitle title="Alertbox" subtitle="Einstellungen für Overlays (Dummy)." />
+      <SectionTitle title={(
+        <span className="inline-flex items-center gap-2">
+          Alertbox
+          <span className="rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-[#9146ff]/15 text-[#c6a3ff] ring-1 ring-[#9146ff]/30">Beta</span>
+        </span>
+      )} subtitle="Einstellungen für Overlays." />
       <Card className="p-6 grid gap-6">
         <div className="grid gap-2">
           <label className="text-sm">Dein Overlay-Link</label>

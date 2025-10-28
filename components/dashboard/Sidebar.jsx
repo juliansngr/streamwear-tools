@@ -20,12 +20,25 @@ export function Sidebar() {
       <div className="px-2 py-2 text-xs uppercase tracking-wide text-[var(--muted-foreground)]">Features</div>
       <nav className="grid gap-1">
         {NAV.map(({ href, label, icon: Icon }) => {
-          const isActive = pathname === href;
+          const allowed = href === "/u/dashboard" || href === "/u/alertbox";
+          const isActive = allowed && pathname === href;
+          const baseClasses = `justify-start gap-2 w-full ${isActive ? "bg-[var(--muted)]/60 ring-1 ring-[#9146ff]/30" : ""}`;
+          if (!allowed) {
+            return (
+              <Button key={href} variant="ghost" disabled className={`${baseClasses} opacity-60 cursor-not-allowed`}>
+                <Icon className="h-4 w-4" />
+                {label}
+              </Button>
+            );
+          }
           return (
-            <Button key={href} variant="ghost" asChild className={`justify-start gap-2 w-full ${isActive ? "bg-[var(--muted)]/60 ring-1 ring-[#9146ff]/30" : ""}`}>
+            <Button key={href} variant="ghost" asChild className={baseClasses}>
               <Link href={href}>
                 <Icon className="h-4 w-4" />
                 {label}
+                {href === "/u/alertbox" && (
+                  <span className="ml-2 rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-[#9146ff]/15 text-[#c6a3ff] ring-1 ring-[#9146ff]/30">Beta</span>
+                )}
               </Link>
             </Button>
           );
