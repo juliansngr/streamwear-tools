@@ -10,11 +10,11 @@ export function OverlayAlert({
   muted = false,
   videoKey,
   subtitle,
-  userName,
-  uuid
+  username,
+  uuid,
 }) {
   const [fetchedSubtitle, setFetchedSubtitle] = useState("");
-  const nameToUse = userName ? userName : "Anonymous";
+  const nameToUse = username ? username : "Anonymous";
 
   useEffect(() => {
     const load = async () => {
@@ -30,7 +30,7 @@ export function OverlayAlert({
           .eq("uuid", uuid)
           .limit(1)
           .maybeSingle();
-        setFetchedSubtitle(!error ? (data?.alertbox_text || "") : "");
+        setFetchedSubtitle(!error ? data?.alertbox_text || "" : "");
       } catch {
         setFetchedSubtitle("");
       }
@@ -42,7 +42,6 @@ export function OverlayAlert({
   const subtitleToUse = rawSubtitle
     ? rawSubtitle.replace(/{{\s*TwitchUserName\s*}}/g, nameToUse)
     : "";
-
 
   return (
     <>
@@ -61,11 +60,16 @@ export function OverlayAlert({
         </div>
         <div
           className="alert-text-anim flex flex-col items-center justify-center"
-          style={{ ["--dur"]: `${animDurationMs}ms`, ["--iter"]: loop ? "infinite" : "1" }}
+          style={{
+            ["--dur"]: `${animDurationMs}ms`,
+            ["--iter"]: loop ? "infinite" : "1",
+          }}
         >
           <div className="flex flex-col items-center justify-center max-w-lg text-6xl -mt-5 font-semibold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
             {subtitleToUse && (
-              <span className="text-5xl text-center text-white font-normal mb-4">{subtitleToUse}</span>
+              <span className="text-5xl text-center text-white font-normal mb-4">
+                {subtitleToUse}
+              </span>
             )}
             {/* <span>{quantity ? `${quantity} × ` : ""}{title}</span> */}
           </div>
@@ -81,17 +85,31 @@ export function OverlayAlert({
           animation-iteration-count: var(--iter);
         }
         @media (prefers-reduced-motion: reduce) {
-          .alert-text-anim { animation: none; opacity: 1; transform: none; }
+          .alert-text-anim {
+            animation: none;
+            opacity: 1;
+            transform: none;
+          }
         }
         @keyframes alertText {
-          0% { opacity: 0; transform: translateY(6px); }
-          25% { opacity: 1; transform: translateY(0); }
-          75% { opacity: 1; transform: translateY(0); }
-          100% { opacity: 0; transform: translateY(-6px); }
+          0% {
+            opacity: 0;
+            transform: translateY(6px);
+          }
+          25% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          75% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(-6px);
+          }
         }
       `}</style>
     </>
   );
 }
-
-

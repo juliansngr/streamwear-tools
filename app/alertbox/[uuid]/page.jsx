@@ -11,14 +11,22 @@ export default function AlertboxPage() {
 
   useEffect(() => {
     // Seite vollständig transparent für OBS
-    const prevHtmlBg = typeof window !== "undefined" ? document.documentElement.style.background : "";
-    const prevBodyBg = typeof window !== "undefined" ? document.body.style.background : "";
+    const prevHtmlBg =
+      typeof window !== "undefined"
+        ? document.documentElement.style.background
+        : "";
+    const prevBodyBg =
+      typeof window !== "undefined" ? document.body.style.background : "";
     if (typeof window !== "undefined") {
       document.documentElement.style.background = "transparent";
       document.body.style.background = "transparent";
     }
     const supabase = createBrowserClient();
-    const channel = supabase.channel(`${process.env.NEXT_PUBLIC_ALERT_TOPIC_PREFIX || "streamwear-alerts"}:${uuid}`);
+    const channel = supabase.channel(
+      `${
+        process.env.NEXT_PUBLIC_ALERT_TOPIC_PREFIX || "streamwear-alerts"
+      }:${uuid}`
+    );
     channel.on("broadcast", { event: "alert" }, (payload) => {
       const data = payload?.payload || payload;
       // set a unique key to restart the video
@@ -52,11 +60,10 @@ export default function AlertboxPage() {
             widthPx={520}
             animDurationMs={8000}
             uuid={uuid}
+            username={last.username}
           />
         )}
       </div>
     </>
   );
 }
-
-
