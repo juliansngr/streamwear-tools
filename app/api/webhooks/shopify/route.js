@@ -47,51 +47,127 @@ async function verifyShopifyHmac(request) {
 }
 
 async function fetchCollectionsForProduct(productId) {
-  // REST: /admin/api/2023-10/collects.json?product_id=ID → collection_ids → /collections.json?id=...
   const base = `https://${SHOPIFY_DOMAIN}/admin/api/2023-10`;
   const headers = {
     "X-Shopify-Access-Token": SHOPIFY_ACCESS_TOKEN,
     "Content-Type": "application/json",
   };
-  dbg("fetch:collects:start", { productId });
-  const collectsRes = await fetch(
-    `${base}/collects.json?product_id=${productId}`,
-    {
-      headers,
-      cache: "no-store",
+
+  const allCollections = [];
+
+  //
+  // 1) Custom Collections über /collects + /custom_collections
+  //
+  try {
+    dbg("fetch:collects:start", { productId });
+    const collectsRes = await fetch(
+      `${base}/collects.json?product_id=${productId}`,
+      {
+        headers,
+        cache: "no-store",
+      }
+    );
+    dbg("fetch:collects:status", {
+      ok: collectsRes.ok,
+      status: collectsRes.status,
+    });
+
+    if (collectsRes.ok) {
+      const collectsJson = await collectsRes.json();
+      const { collects } = collectsJson;
+      const collectionIds = collects?.map((c) => c.collection_id) || [];
+      dbg("fetch:collects:ids", {
+        count: collectionIds.length,
+        sample: collectionIds.slice(0, 5),
+      });
+
+      if (collectionIds.length > 0) {
+        const idsParam = collectionIds.join(",");
+        const colsRes = await fetch(
+          `${base}/custom_collections.json?ids=${idsParam}`,
+          { headers, cache: "no-store" }
+        );
+        dbg("fetch:collections:status", {
+          ok: colsRes.ok,
+          status: colsRes.status,
+        });
+
+        if (colsRes.ok) {
+          const { custom_collections } = await colsRes.json();
+          const mapped = (custom_collections || []).map((c) => ({
+            id: c.id,
+            handle: c.handle,
+            title: c.title,
+            type: "custom",
+          }));
+          dbg("fetch:collections:result", {
+            count: mapped.length,
+            sample: mapped.slice(0, 3),
+          });
+          allCollections.push(...mapped);
+        }
+      }
     }
-  );
-  dbg("fetch:collects:status", {
-    ok: collectsRes.ok,
-    status: collectsRes.status,
+  } catch (err) {
+    dbg("fetch:collects:error", { productId, error: String(err) });
+  }
+
+  //
+  // 2) Smart Collections direkt mit ?product_id=...
+  //
+  try {
+    dbg("fetch:smart:start", { productId });
+    const smartRes = await fetch(
+      `${base}/smart_collections.json?product_id=${productId}`,
+      {
+        headers,
+        cache: "no-store",
+      }
+    );
+    dbg("fetch:smart:status", {
+      ok: smartRes.ok,
+      status: smartRes.status,
+    });
+
+    if (smartRes.ok) {
+      const smartJson = await smartRes.json();
+      const { smart_collections } = smartJson;
+      const mappedSmart = (smart_collections || []).map((c) => ({
+        id: c.id,
+        handle: c.handle,
+        title: c.title,
+        type: "smart",
+      }));
+      dbg("fetch:smart:result", {
+        count: mappedSmart.length,
+        sample: mappedSmart.slice(0, 3),
+      });
+      allCollections.push(...mappedSmart);
+    }
+  } catch (err) {
+    dbg("fetch:smart:error", { productId, error: String(err) });
+  }
+
+  //
+  // 3) Deduplizieren (z. B. nach handle)
+  //
+  const byHandle = new Map();
+  for (const col of allCollections) {
+    if (!col.handle) continue;
+    // Falls es doppelte Handles gibt (custom + smart), gewinnt die erste – reicht hier völlig
+    if (!byHandle.has(col.handle)) {
+      byHandle.set(col.handle, col);
+    }
+  }
+
+  const result = Array.from(byHandle.values());
+  dbg("fetch:collections:combined", {
+    productId,
+    count: result.length,
+    sample: result.slice(0, 5),
   });
-  if (!collectsRes.ok) return [];
-  const { collects } = await collectsRes.json();
-  const collectionIds = collects?.map((c) => c.collection_id) || [];
-  dbg("fetch:collects:ids", {
-    count: collectionIds.length,
-    sample: collectionIds.slice(0, 5),
-  });
-  if (collectionIds.length === 0) return [];
-  // Shopify erwartet eine komma-separierte Liste in "ids"
-  const idsParam = collectionIds.join(",");
-  const colsRes = await fetch(
-    `${base}/custom_collections.json?ids=${idsParam}`,
-    { headers, cache: "no-store" }
-  );
-  dbg("fetch:collections:status", { ok: colsRes.ok, status: colsRes.status });
-  if (!colsRes.ok) return [];
-  const { custom_collections } = await colsRes.json();
-  const mapped = (custom_collections || []).map((c) => ({
-    id: c.id,
-    handle: c.handle,
-    title: c.title,
-  }));
-  dbg("fetch:collections:result", {
-    count: mapped.length,
-    sample: mapped.slice(0, 3),
-  });
-  return mapped;
+
+  return result;
 }
 
 async function broadcastAlert({ uuid, payload }) {

@@ -26,7 +26,7 @@ export async function GET(request) {
   const payload = {
     type: "order",
     customer: "Alex",
-    product_title: "Creator Hoodie",
+    product_title: "Test-Alert",
     variant_title: "Größe L",
     quantity: 1,
     price: 59.0,
@@ -38,5 +38,3 @@ export async function GET(request) {
   await broadcast(uuid, payload);
   return NextResponse.json({ ok: true, channel: `${PREFIX}:${uuid}`, payload });
 }
-
-
