@@ -229,6 +229,14 @@ export async function POST(request) {
     return NextResponse.json({ error: "bad payload" }, { status: 400 });
   }
 
+  // Giveaway-Flag aus Order-Attributes (aus dem Cart-Formular: attributes[giveaway])
+  const hasGiveawayAttribute =
+    order?.attributes && order.attributes.giveaway === "yes";
+  dbg("giveaway:attribute", {
+    hasGiveawayAttribute,
+    attributes: order?.attributes || {},
+  });
+
   // Extract username
 
   const usernameAttr = (order?.note_attributes || []).find(
@@ -249,11 +257,16 @@ export async function POST(request) {
   });
 
   // Collect all collection handles for all products
+  // + pro Produkt die Collections cachen
   const handleSet = new Set();
+  const productCollections = new Map(); // productId -> [collections]
+
   for (const pid of productIds) {
     const cols = await fetchCollectionsForProduct(pid);
+    productCollections.set(pid, cols);
     cols.forEach((c) => handleSet.add(c.handle));
   }
+
   const handles = Array.from(handleSet);
   dbg("handles:collected", {
     count: handles.length,
@@ -282,6 +295,93 @@ export async function POST(request) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  // --- GIVEAWAY: pro Line Item Giveaway-Orders anlegen (falls aktiviert) ---
+  if (
+    hasGiveawayAttribute &&
+    Array.isArray(order?.line_items) &&
+    (streamers || []).length > 0
+  ) {
+    dbg("giveaway:start", {
+      lineItems: order.line_items.length,
+      streamersCount: streamers.length,
+    });
+
+    const giveawayInserts = [];
+    const buyerEmail = order?.email || null;
+    const buyerName = order?.billing_address
+      ? `${order.billing_address.first_name || ""} ${
+          order.billing_address.last_name || ""
+        }`.trim()
+      : null;
+
+    for (const li of order.line_items) {
+      const productId = li.product_id;
+      const lineItemId = li.id;
+      const variantId = li.variant_id;
+
+      if (!productId || !lineItemId) continue;
+
+      // Collections für dieses Produkt
+      const colsForProduct = productCollections.get(productId) || [];
+      const productHandles = colsForProduct
+        .map((c) => c.handle)
+        .filter(Boolean);
+
+      if (productHandles.length === 0) continue;
+
+      // Streamer finden, dessen collection_handle eine dieser Collections ist
+      const streamer = (streamers || []).find((s) =>
+        productHandles.includes(s.collection_handle)
+      );
+
+      if (!streamer) {
+        // Produkt gehört offenbar keiner Streamer-Collection → Haus-Merch → kein Giveaway
+        dbg("giveaway:no_streamer_for_product", {
+          productId,
+          productHandles,
+        });
+        continue;
+      }
+
+      giveawayInserts.push({
+        shopify_order_id: order.id,
+        shopify_line_item_id: lineItemId,
+        product_id: productId,
+        variant_id: variantId,
+        streamer_uuid: streamer.uuid,
+        buyer_email: buyerEmail,
+        buyer_name: buyerName,
+        status: "open",
+      });
+    }
+
+    if (giveawayInserts.length > 0) {
+      dbg("giveaway:insert", {
+        count: giveawayInserts.length,
+        sample: giveawayInserts.slice(0, 2),
+      });
+
+      const { error: giveawayError } = await supabaseAdmin
+        .from("giveaway_orders")
+        .insert(giveawayInserts);
+
+      if (giveawayError) {
+        dbg("giveaway:insert:error", { error: giveawayError.message });
+        // Wir brechen NICHT mit 500 ab, damit Alerts trotzdem funktionieren,
+        // aber du siehst den Fehler im Log.
+      } else {
+        dbg("giveaway:insert:ok", { count: giveawayInserts.length });
+      }
+    } else {
+      dbg("giveaway:insert:skip", { reason: "no applicable line_items" });
+    }
+  }
+  // --- GIVEAWAY ENDE ---
 
   // Prepare a minimal alert payload
   const firstLine = order?.line_items?.[0];
