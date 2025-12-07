@@ -229,12 +229,15 @@ export async function POST(request) {
     return NextResponse.json({ error: "bad payload" }, { status: 400 });
   }
 
-  // Giveaway-Flag aus Order-Attributes (aus dem Cart-Formular: attributes[giveaway])
-  const hasGiveawayAttribute =
-    order?.attributes && order.attributes.giveaway === "yes";
+  // Giveaway-Flag aus note_attributes (Cart-Attribute: attributes[giveaway])
+  const giveawayAttr = (order?.note_attributes || []).find(
+    (attr) => attr.name === "giveaway"
+  );
+  const hasGiveawayAttribute = giveawayAttr?.value === "yes";
+
   dbg("giveaway:attribute", {
     hasGiveawayAttribute,
-    attributes: order?.attributes || {},
+    note_attributes: order?.note_attributes || [],
   });
 
   // Extract username
