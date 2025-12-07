@@ -321,6 +321,7 @@ export async function POST(request) {
           order.billing_address.last_name || ""
         }`.trim()
       : null;
+    const buyerTwitchUsername = username || null;
 
     for (const li of order.line_items) {
       const productId = li.product_id;
@@ -359,6 +360,8 @@ export async function POST(request) {
         streamer_uuid: streamer.uuid,
         buyer_email: buyerEmail,
         buyer_name: buyerName,
+        buyer_twitch_username: buyerTwitchUsername,
+        quantity: li.quantity ?? 1,
         status: "open",
       });
     }
