@@ -17,15 +17,27 @@ export function Sidebar() {
   const pathname = usePathname();
   return (
     <aside className="sticky top-4 h-fit w-56 shrink-0 rounded-[var(--radius-md)] border border-default bg-[color-mix(in_hsl,var(--muted),black_6%)] p-2">
-      <div className="px-2 py-2 text-xs uppercase tracking-wide text-[var(--muted-foreground)]">Features</div>
+      <div className="px-2 py-2 text-xs uppercase tracking-wide text-[var(--muted-foreground)]">
+        Features
+      </div>
       <nav className="grid gap-1">
         {NAV.map(({ href, label, icon: Icon }) => {
-          const allowed = href === "/u/dashboard" || href === "/u/alertbox";
+          const allowed =
+            href === "/u/dashboard" ||
+            href === "/u/alertbox" ||
+            href === "/u/giveaways";
           const isActive = allowed && pathname === href;
-          const baseClasses = `justify-start gap-2 w-full ${isActive ? "bg-[var(--muted)]/60 ring-1 ring-[#9146ff]/30" : ""}`;
+          const baseClasses = `justify-start gap-2 w-full ${
+            isActive ? "bg-[var(--muted)]/60 ring-1 ring-[#9146ff]/30" : ""
+          }`;
           if (!allowed) {
             return (
-              <Button key={href} variant="ghost" disabled className={`${baseClasses} opacity-60 cursor-not-allowed`}>
+              <Button
+                key={href}
+                variant="ghost"
+                disabled
+                className={`${baseClasses} opacity-60 cursor-not-allowed`}
+              >
                 <Icon className="h-4 w-4" />
                 {label}
               </Button>
@@ -37,7 +49,14 @@ export function Sidebar() {
                 <Icon className="h-4 w-4" />
                 {label}
                 {href === "/u/alertbox" && (
-                  <span className="ml-2 rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-[#9146ff]/15 text-[#c6a3ff] ring-1 ring-[#9146ff]/30">Beta</span>
+                  <span className="ml-2 rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-[#9146ff]/15 text-[#c6a3ff] ring-1 ring-[#9146ff]/30">
+                    Beta
+                  </span>
+                )}
+                {href === "/u/giveaways" && (
+                  <span className="ml-2 rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-[#ff9800]/15 text-[#ffb74d] ring-1 ring-[#ff9800]/30">
+                    Alpha
+                  </span>
                 )}
               </Link>
             </Button>
@@ -47,5 +66,3 @@ export function Sidebar() {
     </aside>
   );
 }
-
-
