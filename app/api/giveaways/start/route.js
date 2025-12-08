@@ -6,7 +6,8 @@ export const runtime = "nodejs";
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { giveawayOrderId, command, durationSeconds } = body;
+    const { giveawayOrderId, command, durationSeconds, previousGiveawayId } =
+      body;
 
     if (!giveawayOrderId) {
       return NextResponse.json(
@@ -46,6 +47,22 @@ export async function POST(req) {
         { error: "connector not found" },
         { status: 404 }
       );
+    }
+
+    // Optional: altes Giveaway entfernen, wenn es z.B. auf "ended" steht
+    if (previousGiveawayId) {
+      // Teilnehmer des alten Giveaways entfernen
+      await supabaseAdmin
+        .from("giveaway_participants")
+        .delete()
+        .eq("giveaway_id", previousGiveawayId);
+
+      // Altes Giveaway löschen/zurücksetzen
+      await supabaseAdmin
+        .from("giveaways")
+        .delete()
+        .eq("id", previousGiveawayId)
+        .eq("streamer_uuid", order.streamer_uuid);
     }
 
     // 2) Giveaway anlegen

@@ -1,10 +1,12 @@
 "use server";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { getShopifyProductDetails } from "@/lib/shopify";
 import { createClient as createServerSupabaseClient } from "@/supabase/serverClient";
 import GiveawaysList from "./GiveawaysList";
+import { revalidatePath } from "next/cache";
 
-async function loadGiveaways() {
+async function loadData() {
   const supabase = await createServerSupabaseClient();
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData?.user?.id;
@@ -14,14 +16,16 @@ async function loadGiveaways() {
 
   const { data: connector, error: connectorError } = await supabase
     .from("shopify_connectors")
-    .select("uuid")
+    .select("uuid, features")
     .eq("user_id", userId)
     .limit(1)
     .maybeSingle();
   if (connectorError) throw connectorError;
 
   const streamerUuid = connector?.uuid;
-  if (!streamerUuid) return [];
+  const featureEnabled = Boolean(connector?.features?.giveaways);
+
+  if (!streamerUuid) return { giveaways: [], featureEnabled };
 
   const { data: orders, error: ordersError } = await supabase
     .from("giveaway_orders")
@@ -79,24 +83,89 @@ async function loadGiveaways() {
     })
   );
 
-  return enriched;
+  return { giveaways: enriched, featureEnabled };
+}
+
+async function toggleGiveawaysFeature(previouslyEnabled) {
+  "use server";
+  const supabase = await createServerSupabaseClient();
+  const { data: userData } = await supabase.auth.getUser();
+  const userId = userData?.user?.id;
+  if (!userId) throw new Error("Nicht eingeloggt.");
+
+  const { data: connector } = await supabase
+    .from("shopify_connectors")
+    .select("uuid, features")
+    .eq("user_id", userId)
+    .limit(1)
+    .maybeSingle();
+
+  if (!connector?.uuid) throw new Error("Kein Shopify-Connector gefunden.");
+
+  const currentFeatures = connector.features || {};
+  const nextFeatures = { ...currentFeatures, giveaways: !previouslyEnabled };
+
+  const { error } = await supabase
+    .from("shopify_connectors")
+    .update({ features: nextFeatures })
+    .eq("uuid", connector.uuid);
+
+  if (error) throw new Error("Feature konnte nicht aktualisiert werden.");
+
+  revalidatePath("/u/giveaways");
 }
 
 export default async function GiveawaysSettings() {
   let giveaways = [];
+  let featureEnabled = false;
   let error = "";
   try {
-    giveaways = await loadGiveaways();
+    const data = await loadData();
+    giveaways = data.giveaways;
+    featureEnabled = data.featureEnabled;
   } catch (err) {
     error = "Konnte Giveaways nicht laden.";
   }
 
   return (
     <>
-      <SectionTitle
-        title="Giveaways"
-        subtitle="Hier verwaltest du alle Giveaway-Bestellungen und startest neue Verlosungen."
-      />
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">Giveaways</h1>
+          <p className="mt-1 text-muted-foreground">
+            Hier verwaltest du alle Giveaway-Bestellungen und startest neue
+            Verlosungen.
+          </p>
+        </div>
+        <form
+          className="flex items-center gap-2 rounded-md border border-default bg-[color-mix(in_hsl,var(--muted),black_4%)] px-2.5 py-1.5"
+          action={toggleGiveawaysFeature.bind(null, featureEnabled)}
+        >
+          <p className="text-sm text-muted-foreground">
+            {featureEnabled ? "Aktiviert" : "Deaktiviert"}
+          </p>
+          <button
+            type="submit"
+            aria-pressed={featureEnabled}
+            className={`relative inline-flex h-7 w-12 items-center rounded-full transition cursor-pointer ${
+              featureEnabled
+                ? "bg-[#8c7ae6] hover:bg-[#7f6cdc]"
+                : "bg-[color-mix(in_hsl,var(--muted),black_6%)] hover:bg-[color-mix(in_hsl,var(--muted),black_4%)] border border-muted-foreground/40"
+            }`}
+          >
+            <span
+              className={`inline-block h-5 w-5 rounded-full bg-white shadow transition ${
+                featureEnabled ? "translate-x-6" : "translate-x-1"
+              }`}
+            />
+            <span className="sr-only">
+              {featureEnabled
+                ? "Giveaways deaktivieren"
+                : "Giveaways aktivieren"}
+            </span>
+          </button>
+        </form>
+      </div>
 
       {error && (
         <Card className="p-4 border-destructive/40 text-destructive">
@@ -104,13 +173,20 @@ export default async function GiveawaysSettings() {
         </Card>
       )}
 
-      {!error && giveaways.length === 0 && (
-        <Card className="p-6 border-dashed text-[var(--muted-foreground)]">
+      {!error && !featureEnabled && (
+        <Card className="p-6 border-dashed text-muted-foreground">
+          Giveaways sind aktuell deaktiviert. Aktiviere das Feature, um deine
+          Verlosungen zu verwalten.
+        </Card>
+      )}
+
+      {!error && featureEnabled && giveaways.length === 0 && (
+        <Card className="p-6 border-dashed text-muted-foreground">
           Noch keine Giveaways gefunden.
         </Card>
       )}
 
-      {!error && giveaways.length > 0 && (
+      {!error && featureEnabled && giveaways.length > 0 && (
         <>
           <GiveawaysList
             giveaways={giveaways.filter(
@@ -140,9 +216,7 @@ function SectionTitle({ title, subtitle }) {
   return (
     <header className="mb-6">
       <h1 className="text-2xl font-semibold">{title}</h1>
-      {subtitle && (
-        <p className="mt-1 text-[var(--muted-foreground)]">{subtitle}</p>
-      )}
+      {subtitle && <p className="mt-1 text-muted-foreground">{subtitle}</p>}
     </header>
   );
 }

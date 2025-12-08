@@ -22,7 +22,9 @@ async function loadData(code) {
   // 2) Zugehöriges Giveaway laden -> giveaway_order_id
   const { data: giveaway } = await supabase
     .from("giveaways")
-    .select("giveaway_order_id")
+    .select(
+      "giveaway_order_id, streamer_uuid, winner_twitch_display_name, winner_twitch_login"
+    )
     .eq("id", detail.giveaway_id)
     .maybeSingle();
   const giveawayOrderId = giveaway?.giveaway_order_id || null;
@@ -38,6 +40,17 @@ async function loadData(code) {
 
   const productId = order?.product_id || null;
   const variantId = order?.variant_id || null;
+
+  // 4) Streamer-Display-Name holen
+  let streamerDisplayName = null;
+  if (giveaway?.streamer_uuid) {
+    const { data: streamerData } = await supabase
+      .from("shopify_connectors")
+      .select("display_name")
+      .eq("uuid", giveaway.streamer_uuid)
+      .maybeSingle();
+    streamerDisplayName = streamerData?.display_name || null;
+  }
 
   let product = {
     title: "Unbekanntes Produkt",
@@ -69,16 +82,28 @@ async function loadData(code) {
     product,
     buyer: order?.buyer_twitch_username || null,
     code: detail.id,
+    winnerName:
+      giveaway?.winner_twitch_display_name ||
+      giveaway?.winner_twitch_login ||
+      null,
+    streamerName: streamerDisplayName,
   };
 }
 
 export default async function GiveawayRedeemPage({ params }) {
   const resolvedParams = await params;
   const code = resolvedParams?.code;
-  const { error, product, buyer, code: resolvedCode } = await loadData(code);
+  const {
+    error,
+    product,
+    buyer,
+    code: resolvedCode,
+    winnerName,
+    streamerName,
+  } = await loadData(code);
 
   return (
-    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+    <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-10">
         <div className="mx-auto">
           <Image
@@ -92,15 +117,20 @@ export default async function GiveawayRedeemPage({ params }) {
         </div>
 
         <header className="grid gap-2 text-center">
-          <p className="text-xs uppercase tracking-wide text-[var(--muted-foreground)]">
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">
             Giveaway-Einlösung
           </p>
           <h1 className="text-3xl font-semibold">
-            Dein Gewinn wartet auf dich
+            {winnerName
+              ? `${winnerName}, dein Gewinn wartet!`
+              : "Dein Gewinn wartet auf dich"}
           </h1>
-          <p className="text-[var(--muted-foreground)]">
-            Trage deine Daten ein, damit wir dir den Gewinn zusenden können.
-            Dies ist eine Demo-Oberfläche (keine echte Einreichung).
+          <p className="text-muted-foreground">
+            {winnerName && product?.title && streamerName
+              ? `Herzlichen Glückwunsch ${winnerName}! Du hast ${product.title} bei ${streamerName} gewonnen. Wir brauchen nur noch deine Adresse – versprochen, kein "Press F to pay respects", höchstens ein GG im Chat.`
+              : streamerName
+              ? `Glückwunsch! Du hast auf dem Kanal von ${streamerName} gewonnen. Trag kurz deine Daten ein und wir schicken dir den Gewinn.`
+              : "Glückwunsch zum Gewinn! Trag kurz deine Daten ein und wir schicken dir den Gewinn."}
           </p>
         </header>
 
@@ -127,7 +157,7 @@ export default async function GiveawayRedeemPage({ params }) {
                     className="object-cover"
                     priority
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent" />
                   <div className="absolute inset-x-0 bottom-0 p-5 text-white">
                     <p className="text-[11px] uppercase tracking-[0.2em] text-white/80">
                       Dein Gewinn
@@ -144,53 +174,49 @@ export default async function GiveawayRedeemPage({ params }) {
                 </div>
 
                 <div className="p-5 grid gap-3">
-                  <div className="grid gap-1 text-sm text-[var(--muted-foreground)]">
+                  <div className="grid gap-2 text-sm text-muted-foreground">
                     {buyer && (
-                      <p className="text-[var(--foreground)]">
-                        Gesponsert von: {buyer}
+                      <p className="text-foreground">Gesponsert von: {buyer}</p>
+                    )}
+                    {streamerName && (
+                      <p>
+                        Verlost auf:{" "}
+                        <span className="font-semibold text-foreground">
+                          {streamerName}
+                        </span>
                       </p>
                     )}
                     <p>Code: {resolvedCode}</p>
                     <p>
-                      Die Auslieferung erfolgt nach Prüfung deiner Angaben. Dies
-                      ist derzeit nur eine Vorschau – es werden keine realen
-                      Bestellungen ausgelöst.
+                      Wir senden den Gewinn an die Adresse, die du gleich
+                      einträgst. PogChamp!
                     </p>
                   </div>
                 </div>
               </Card>
 
-              <Card className="p-6 grid gap-4 h-full">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="grid gap-1">
-                    <p className="text-xs uppercase tracking-wide text-[var(--muted-foreground)]">
-                      Nächste Schritte
-                    </p>
-                    <h2 className="text-lg font-semibold">
-                      Trage deine Versanddaten ein
-                    </h2>
-                    <p className="text-sm text-[var(--muted-foreground)]">
-                      Wir benötigen deine Adresse, um den Gewinn zu versenden.
-                      Aktuell ist dies eine Demo – es werden keine Daten
-                      gespeichert.
-                    </p>
-                  </div>
-                </div>
-                <div className="grid gap-2 text-sm text-[var(--muted-foreground)]">
-                  <p>
-                    Hinweis: In der finalen Version kannst du hier deine Daten
-                    absenden. Jetzt ist dies nur eine Vorschau.
+              <Card className="p-5 grid gap-3 h-full">
+                <div className="grid gap-1">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    Nächste Schritte
+                  </p>
+                  <h2 className="text-lg font-semibold">
+                    Gleich geht’s raus zu dir
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Einmal Adresse eintragen, dann kümmert sich unser Team –
+                    kein Spam, nur dein Gewinn.
                   </p>
                 </div>
               </Card>
             </section>
 
-            <Card className="p-6 grid gap-5">
+            <Card className="p-6 grid gap-4">
               <div className="grid gap-2">
                 <h2 className="text-lg font-semibold">Deine Daten</h2>
-                <p className="text-sm text-[var(--muted-foreground)]">
-                  Bitte fülle alle Felder aus. In dieser Demo werden die Daten
-                  nicht gespeichert.
+                <p className="text-sm text-muted-foreground">
+                  Nur was wir zum Versand brauchen – danach heißt es „Package
+                  inbound“.
                 </p>
               </div>
 
@@ -235,12 +261,8 @@ export default async function GiveawayRedeemPage({ params }) {
 
               <div className="grid gap-2">
                 <Button className="w-full md:w-auto" disabled>
-                  Daten absenden (Demo)
+                  Absenden (bald verfügbar)
                 </Button>
-                <p className="text-xs text-[var(--muted-foreground)]">
-                  Hinweis: In dieser Dummy-Version werden keine Daten
-                  übertragen.
-                </p>
               </div>
             </Card>
           </>

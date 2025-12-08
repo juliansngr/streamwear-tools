@@ -24,7 +24,7 @@ export async function POST(request) {
   // 1) Giveaway laden
   const { data: giveaway, error: gError } = await supabaseAdmin
     .from("giveaways")
-    .select("id, streamer_uuid, status")
+    .select("id, streamer_uuid, status, giveaway_order_id")
     .eq("id", giveawayId)
     .maybeSingle();
 

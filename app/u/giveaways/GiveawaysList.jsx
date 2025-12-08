@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createBrowserClient } from "@/lib/supabase/browserClient";
+import { Copy } from "lucide-react";
 import {
   Dialog,
   DialogTrigger,
@@ -41,6 +42,7 @@ function GiveawayCard({ giveaway }) {
   const [winner, setWinner] = useState(giveaway.winner || null);
   const [now, setNow] = useState(Date.now());
   const [participants, setParticipants] = useState([]);
+  const giveawayOrderId = giveaway.id;
 
   useEffect(() => {
     if (!open) return;
@@ -52,8 +54,9 @@ function GiveawayCard({ giveaway }) {
     if (!open) return;
     const supabase = createBrowserClient();
     let active = true;
-    const giveawayId = activeGiveaway?.id || giveaway.giveaway?.id || null;
-    if (!giveawayId) return;
+    const currentGiveawayId =
+      activeGiveaway?.id || giveaway.giveaway?.id || null;
+    if (!currentGiveawayId) return;
 
     const load = async () => {
       const { data, error } = await supabase
@@ -61,7 +64,7 @@ function GiveawayCard({ giveaway }) {
         .select(
           "id, giveaway_id, twitch_login, twitch_display_name, twitch_user_id, joined_at"
         )
-        .eq("giveaway_id", giveawayId)
+        .eq("giveaway_id", currentGiveawayId)
         .order("joined_at", { ascending: true });
       if (!error && active) {
         setParticipants(data || []);
@@ -70,14 +73,14 @@ function GiveawayCard({ giveaway }) {
     load();
 
     const channel = supabase
-      .channel(`realtime-giveaway-${giveawayId}`)
+      .channel(`realtime-giveaway-${currentGiveawayId}`)
       .on(
         "postgres_changes",
         {
           event: "*",
           schema: "public",
           table: "giveaway_participants",
-          filter: `giveaway_id=eq.${giveawayId}`,
+          filter: `giveaway_id=eq.${currentGiveawayId}`,
         },
         (payload) => {
           setParticipants((prev) => {
@@ -107,8 +110,58 @@ function GiveawayCard({ giveaway }) {
     };
   }, [open, activeGiveaway?.id, giveaway.giveaway?.id]);
 
+  // Realtime: Giveaway-Status/Winner aktualisieren
+  useEffect(() => {
+    if (!open) return;
+    const supabase = createBrowserClient();
+    const channel = supabase
+      .channel(`realtime-giveaway-status-${giveawayOrderId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "giveaways",
+          filter: `giveaway_order_id=eq.${giveawayOrderId}`,
+        },
+        async (payload) => {
+          const newRow = payload.new;
+          if (!newRow) return;
+          setActiveGiveaway(newRow);
+          if (newRow.winner_participant_id) {
+            const { data: w } = await supabase
+              .from("giveaway_participants")
+              .select("twitch_login, twitch_display_name, twitch_user_id")
+              .eq("id", newRow.winner_participant_id)
+              .maybeSingle();
+            const { data: wd } = await supabase
+              .from("giveaway_winner_details")
+              .select("id")
+              .eq("giveaway_id", newRow.id)
+              .maybeSingle();
+            setWinner(
+              w
+                ? {
+                    ...w,
+                    winnerDetailId: wd?.id || giveaway.winner?.winnerDetailId,
+                  }
+                : null
+            );
+          }
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [open, giveawayOrderId, giveaway.winner?.winnerDetailId]);
+
   const startGiveaway = async () => {
     if (loading) return;
+    if (activeGiveaway?.status === "running") {
+      toast.info("Giveaway läuft bereits.");
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch("/api/giveaways/start", {
@@ -118,6 +171,8 @@ function GiveawayCard({ giveaway }) {
           giveawayOrderId: giveaway.id,
           command,
           durationSeconds: Number(duration) || 60,
+          previousGiveawayId:
+            activeGiveaway?.status === "ended" ? activeGiveaway.id : null,
         }),
       });
 
@@ -127,6 +182,8 @@ function GiveawayCard({ giveaway }) {
       }
 
       const data = await res.json();
+      setParticipants([]);
+      setWinner(null);
       setActiveGiveaway(data?.giveaway || null);
       toast.success("Giveaway gestartet.");
     } catch (err) {
@@ -142,6 +199,7 @@ function GiveawayCard({ giveaway }) {
   const isOver = endsAt ? now >= endsAt.getTime() : false;
   const status = activeGiveaway?.status;
   const isFinished = status === "finished";
+  const hasWinner = Boolean(winner);
 
   const drawWinner = async () => {
     if (!activeGiveaway?.id || drawLoading) return;
@@ -217,7 +275,7 @@ function GiveawayCard({ giveaway }) {
 
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full">Verlosung öffnen</Button>
+            <Button className="w-full cursor-pointer">Verlosung öffnen</Button>
           </DialogTrigger>
           <DialogContent className="p-6 sm:max-w-xl">
             <DialogHeader className="text-left pb-6">
@@ -252,7 +310,7 @@ function GiveawayCard({ giveaway }) {
                 />
               </label>
               <div className="grid gap-2">
-                <p className="text-sm font-medium">Teilnehmer (Realtime)</p>
+                <p className="text-sm font-medium">Teilnehmer</p>
                 <div className="min-h-[180px] max-h-[260px] overflow-auto rounded-[var(--radius-md)] border border-default bg-[color-mix(in_hsl,var(--muted),black_6%)] p-3 text-sm text-[var(--muted-foreground)]">
                   {participants.length === 0 ? (
                     <div className="text-[var(--muted-foreground)]">
@@ -279,7 +337,7 @@ function GiveawayCard({ giveaway }) {
               </div>
               {!activeGiveaway && (
                 <Button
-                  className="w-full"
+                  className="w-full cursor-pointer"
                   onClick={startGiveaway}
                   disabled={loading || !!activeGiveaway}
                 >
@@ -313,12 +371,28 @@ function GiveawayCard({ giveaway }) {
                   <Button
                     variant="outline"
                     onClick={drawWinner}
-                    disabled={drawLoading || status === "running" || !isOver}
+                    disabled={
+                      drawLoading ||
+                      status === "running" ||
+                      !isOver ||
+                      hasWinner
+                    }
+                    className="cursor-pointer"
                   >
                     {drawLoading ? "Ziehe…" : "Gewinner ziehen"}
                   </Button>
+                  {status === "ended" && !hasWinner && (
+                    <Button
+                      variant="outline"
+                      onClick={startGiveaway}
+                      disabled={loading || drawLoading}
+                      className="w-full sm:w-auto cursor-pointer text-sm"
+                    >
+                      Neu starten
+                    </Button>
+                  )}
                   {winner && (
-                    <div className="grid gap-1 rounded-[var(--radius-md)] border border-default bg-[color-mix(in_hsl,var(--muted),black_4%)] px-3 py-2 text-sm">
+                    <div className="grid gap-2 rounded-[var(--radius-md)] border border-default bg-[color-mix(in_hsl,var(--muted),black_4%)] px-3 py-2 text-sm">
                       <span className="text-[var(--muted-foreground)]">
                         Gewinner
                       </span>
@@ -326,15 +400,35 @@ function GiveawayCard({ giveaway }) {
                         {winner.twitch_display_name || winner.twitch_login}
                       </div>
                       {winner.winnerDetailId ? (
-                        <a
-                          href={`https://streamwear.tools/giveaways/redeem/${winner.winnerDetailId}`}
-                          className="text-xs text-blue-400 underline underline-offset-2 break-all"
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          https://streamwear.tools/giveaways/redeem/
-                          {winner.winnerDetailId}
-                        </a>
+                        <div className="grid gap-1">
+                          <span className="text-[var(--muted-foreground)] text-xs">
+                            Redeem-Link kopieren
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <Input
+                              readOnly
+                              value={`https://streamwear.xyz/giveaway/redeem/${winner.winnerDetailId}`}
+                              className="text-xs font-mono"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="cursor-pointer"
+                              onClick={async () => {
+                                try {
+                                  await navigator.clipboard.writeText(
+                                    `https://streamwear.xyz/giveaway/redeem/${winner.winnerDetailId}`
+                                  );
+                                  toast.success("Link kopiert");
+                                } catch {
+                                  toast.error("Konnte nicht kopieren");
+                                }
+                              }}
+                            >
+                              <Copy className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
                       ) : (
                         <span className="text-xs text-[var(--muted-foreground)]">
                           Kein Redeem-Link vorhanden
@@ -345,8 +439,12 @@ function GiveawayCard({ giveaway }) {
                 </div>
               )}
               <DialogClose asChild>
-                <Button variant="outline" className="w-full" disabled={loading}>
-                  Abbrechen
+                <Button
+                  variant="outline"
+                  className="w-full cursor-pointer"
+                  disabled={loading}
+                >
+                  Schließen
                 </Button>
               </DialogClose>
             </div>
