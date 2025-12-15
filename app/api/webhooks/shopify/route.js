@@ -382,6 +382,40 @@ export async function POST(request) {
         // aber du siehst den Fehler im Log.
       } else {
         dbg("giveaway:insert:ok", { count: giveawayInserts.length });
+
+        const firstLine = order?.line_items?.[0];
+        const productTitle = firstLine?.title || "Unbekanntes Produkt";
+        const mailed = new Set();
+
+        for (const s of streamers || []) {
+          const userId = s.user_id;
+          const streamerName = s.display_name || s.twitch_username || "Creator";
+
+          if (mailed.has(userId)) continue;
+          mailed.add(userId);
+
+          const email = await getUserEmailFromAuth(userId);
+          if (!email) {
+            console.warn("[email] No email found for user", {
+              userId,
+            });
+            continue;
+          }
+
+          try {
+            await sendGiveawayOrderEmail({
+              to: email,
+              streamerName,
+              productTitle,
+            });
+            console.log("[email] sent", { to: email });
+          } catch (err) {
+            console.error("[email] send error", {
+              to: email,
+              err: String(err),
+            });
+          }
+        }
       }
     } else {
       dbg("giveaway:insert:skip", { reason: "no applicable line_items" });
