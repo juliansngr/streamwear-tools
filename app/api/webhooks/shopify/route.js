@@ -289,7 +289,7 @@ export async function POST(request) {
   });
   const { data: streamers, error } = await supabaseAdmin
     .from("shopify_connectors")
-    .select("uuid, collection_handle")
+    .select("uuid, collection_handle, user_id")
     .in("collection_handle", handles);
   dbg("supabase:result", {
     error: error?.message,
