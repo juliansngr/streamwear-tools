@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const links = [
   {
@@ -12,7 +18,7 @@ const links = [
   {
     href: "/docs/giveaways",
     title: "Giveaways",
-    badge: "Alpha",
+    badge: "Beta",
     description:
       "Gewinnspiele starten, Gewinner ziehen und den Einlöse-Link teilen – alles an einem Ort.",
   },
@@ -31,8 +37,8 @@ export default function DocsPage() {
               Streamwear Handbuch
             </h1>
             <p className="max-w-3xl text-muted-foreground">
-              Kurze, praxisnahe Guides zu jedem Feature. Wähle ein Kapitel in der
-              Seitenleiste oder starte hier.
+              Kurze, praxisnahe Guides zu jedem Feature. Wähle ein Kapitel in
+              der Seitenleiste oder starte hier.
             </p>
           </div>
         </header>
@@ -61,4 +67,3 @@ export default function DocsPage() {
     </main>
   );
 }
-

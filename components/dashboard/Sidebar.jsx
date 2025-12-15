@@ -55,7 +55,7 @@ export function Sidebar() {
                 )}
                 {href === "/u/giveaways" && (
                   <span className="ml-2 rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-[#ff9800]/15 text-[#ffb74d] ring-1 ring-[#ff9800]/30">
-                    Alpha
+                    Beta
                   </span>
                 )}
               </Link>

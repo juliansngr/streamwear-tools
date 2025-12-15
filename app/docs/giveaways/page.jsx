@@ -12,21 +12,21 @@ const walkthrough = [
   {
     title: "Checkout: Giveaway Bestellung",
     description:
-      "Beim Checkout kann der Käufer hier einen Haken setzen, damit diese Bestellung ein Giveaway auslöst.",
+      "Beim Checkout kann der Käufer hier einen Haken setzen, damit diese Bestellung ein Giveaway auslöst. Sobald das geschieht, wirst du per E-Mail benachrichtigt.",
     image: "/docs/giveaways/giveaway_1.webp",
     alt: "Checkout mit Checkbox für Giveaway",
   },
   {
-    title: "Wo finde ich Giveaways?",
+    title: "Wo gelange ich zu meinen Giveaways?",
     description:
-      "Im Dashboard findest du links in der Sidebar den Tab „Giveaways“. Dort siehst du alle aktuellen Giveaways und ihren Status.",
+      "Im Dashboard findest du links in der Sidebar den Tab „Giveaways“. Das Feature befindet sich momentan in der Beta-Phase.",
     image: "/docs/giveaways/giveaway_2.webp",
     alt: "Dashboard Sidebar mit Giveaways Tab",
   },
   {
     title: "Übersicht deiner Giveaways",
     description:
-      "In der Übersicht siehst du alle verfügbaren Giveaways sowie deren Status",
+      "In der Übersicht siehst du alle verfügbaren Giveaways sowie deren Status.",
     image: "/docs/giveaways/giveaway_3.webp",
     alt: "Giveaway Übersichtsliste",
   },
