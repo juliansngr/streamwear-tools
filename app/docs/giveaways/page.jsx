@@ -89,9 +89,7 @@ export default function GiveawaysDocsPage() {
       <Card className="border-default/80 bg-[color-mix(in_hsl,var(--card),black_2%)]">
         <CardHeader>
           <CardTitle>Schritt für Schritt mit Bildern</CardTitle>
-          <CardDescription>
-            So nutzt du Giveaways – ohne technischen Ballast.
-          </CardDescription>
+          <CardDescription>So nutzt du Giveaways</CardDescription>
         </CardHeader>
         <CardContent className="space-y-8">
           {walkthrough.map((step) => (
