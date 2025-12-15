@@ -1,7 +1,7 @@
 import DocsSidebar from "./sidebar";
 
 export const metadata = {
-  title: "Docs | Streamwear",
+  title: "Docs | streamwear. Tools",
 };
 
 export default function DocsLayout({ children }) {
@@ -11,12 +11,8 @@ export default function DocsLayout({ children }) {
         <aside className="hidden w-64 shrink-0 lg:block">
           <DocsSidebar />
         </aside>
-        <div className="flex-1 min-w-0">
-          {children}
-        </div>
+        <div className="flex-1 min-w-0">{children}</div>
       </div>
     </main>
   );
 }
-
-

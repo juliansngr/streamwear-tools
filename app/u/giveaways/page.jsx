@@ -129,43 +129,19 @@ export default async function GiveawaysSettings() {
 
   return (
     <>
-      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold">Giveaways</h1>
-          <p className="mt-1 text-muted-foreground">
-            Hier verwaltest du alle Giveaway-Bestellungen und startest neue
-            Verlosungen.
-          </p>
-        </div>
-        <form
-          className="flex items-center gap-2 rounded-md border border-default bg-[color-mix(in_hsl,var(--muted),black_4%)] px-2.5 py-1.5"
-          action={toggleGiveawaysFeature.bind(null, featureEnabled)}
-        >
-          <p className="text-sm text-muted-foreground">
-            {featureEnabled ? "Aktiviert" : "Deaktiviert"}
-          </p>
-          <button
-            type="submit"
-            aria-pressed={featureEnabled}
-            className={`relative inline-flex h-7 w-12 items-center rounded-full transition cursor-pointer ${
-              featureEnabled
-                ? "bg-[#8c7ae6] hover:bg-[#7f6cdc]"
-                : "bg-[color-mix(in_hsl,var(--muted),black_6%)] hover:bg-[color-mix(in_hsl,var(--muted),black_4%)] border border-muted-foreground/40"
-            }`}
-          >
-            <span
-              className={`inline-block h-5 w-5 rounded-full bg-white shadow transition ${
-                featureEnabled ? "translate-x-6" : "translate-x-1"
-              }`}
-            />
-            <span className="sr-only">
-              {featureEnabled
-                ? "Giveaways deaktivieren"
-                : "Giveaways aktivieren"}
+      <SectionTitle
+        title={
+          <span className="inline-flex items-center gap-2">
+            Giveaways
+            <span className="rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-[#9146ff]/15 text-[#c6a3ff] ring-1 ring-[#9146ff]/30">
+              Beta
             </span>
-          </button>
-        </form>
-      </div>
+          </span>
+        }
+        subtitle="Hier verwaltest du alle Giveaway-Bestellungen und startest neue Verlosungen."
+        activateButton={true}
+        featureEnabled={featureEnabled}
+      />
 
       {error && (
         <Card className="p-4 border-destructive/40 text-destructive">
@@ -212,11 +188,56 @@ export default async function GiveawaysSettings() {
   );
 }
 
-function SectionTitle({ title, subtitle }) {
+function SectionTitle({ title, subtitle, activateButton, featureEnabled }) {
   return (
     <header className="mb-6">
-      <h1 className="text-2xl font-semibold">{title}</h1>
-      {subtitle && <p className="mt-1 text-muted-foreground">{subtitle}</p>}
+      {activateButton ? (
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold">{title}</h1>
+            {subtitle && (
+              <p className="mt-1 text-[var(--muted-foreground)]">{subtitle}</p>
+            )}
+          </div>
+          {activateButton && (
+            <form
+              className="flex items-center gap-2 rounded-md border border-default bg-[color-mix(in_hsl,var(--muted),black_4%)] px-2.5 py-1.5"
+              action={toggleGiveawaysFeature.bind(null, featureEnabled)}
+            >
+              <p className="text-sm text-muted-foreground">
+                {featureEnabled ? "Aktiviert" : "Deaktiviert"}
+              </p>
+              <button
+                type="submit"
+                aria-pressed={featureEnabled}
+                className={`relative inline-flex h-7 w-12 items-center rounded-full transition cursor-pointer ${
+                  featureEnabled
+                    ? "bg-[#8c7ae6] hover:bg-[#7f6cdc]"
+                    : "bg-[color-mix(in_hsl,var(--muted),black_6%)] hover:bg-[color-mix(in_hsl,var(--muted),black_4%)] border border-muted-foreground/40"
+                }`}
+              >
+                <span
+                  className={`inline-block h-5 w-5 rounded-full bg-white shadow transition ${
+                    featureEnabled ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+                <span className="sr-only">
+                  {featureEnabled
+                    ? "Giveaways deaktivieren"
+                    : "Giveaways aktivieren"}
+                </span>
+              </button>
+            </form>
+          )}
+        </div>
+      ) : (
+        <>
+          <h1 className="text-2xl font-semibold">{title}</h1>
+          {subtitle && (
+            <p className="mt-1 text-[var(--muted-foreground)]">{subtitle}</p>
+          )}
+        </>
+      )}
     </header>
   );
 }

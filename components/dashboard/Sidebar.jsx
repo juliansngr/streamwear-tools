@@ -16,8 +16,8 @@ const NAV = [
 export function Sidebar() {
   const pathname = usePathname();
   return (
-    <aside className="sticky top-4 h-fit w-56 shrink-0 rounded-[var(--radius-md)] border border-default bg-[color-mix(in_hsl,var(--muted),black_6%)] p-2">
-      <div className="px-2 py-2 text-xs uppercase tracking-wide text-[var(--muted-foreground)]">
+    <aside className="sticky top-4 h-fit w-56 shrink-0 rounded-(--radius-md) border border-default bg-[color-mix(in_hsl,var(--muted),black_6%)] p-2">
+      <div className="px-2 py-2 text-xs uppercase tracking-wide text-muted-foreground">
         Features
       </div>
       <nav className="grid gap-1">
@@ -25,7 +25,8 @@ export function Sidebar() {
           const allowed =
             href === "/u/dashboard" ||
             href === "/u/alertbox" ||
-            href === "/u/giveaways";
+            href === "/u/giveaways" ||
+            href === "/u/chatbot";
           const isActive = allowed && pathname === href;
           const baseClasses = `justify-start gap-2 w-full ${
             isActive ? "bg-[var(--muted)]/60 ring-1 ring-[#9146ff]/30" : ""
@@ -54,7 +55,12 @@ export function Sidebar() {
                   </span>
                 )}
                 {href === "/u/giveaways" && (
-                  <span className="ml-2 rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-[#ff9800]/15 text-[#ffb74d] ring-1 ring-[#ff9800]/30">
+                  <span className="ml-2 rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-[#9146ff]/15 text-[#c6a3ff] ring-1 ring-[#9146ff]/30">
+                    Beta
+                  </span>
+                )}
+                {href === "/u/chatbot" && (
+                  <span className="ml-2 rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-[#9146ff]/15 text-[#c6a3ff] ring-1 ring-[#9146ff]/30">
                     Beta
                   </span>
                 )}
