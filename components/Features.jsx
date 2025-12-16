@@ -1,7 +1,14 @@
 "use client";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
-import { BellRing, Bot, Gift, BarChart3, Bell, ChevronDown } from "lucide-react";
+import {
+  BellRing,
+  Bot,
+  Gift,
+  BarChart3,
+  Bell,
+  ChevronDown,
+} from "lucide-react";
 
 export function Features() {
   const handleGlow = (e) => {
@@ -24,14 +31,21 @@ export function Features() {
   return (
     <section id="features" className="mx-auto max-w-6xl px-4 py-14 sm:py-20">
       <div className="mx-auto max-w-2xl text-center">
-        <h2 className="text-2xl font-semibold sm:text-3xl">Was dich erwartet</h2>
-        <p className="mt-2 text-[var(--muted-foreground)]">Ein kuratierter Werkzeugkasten für Streamer und Brands.</p>
+        <h2 className="text-2xl font-semibold sm:text-3xl">
+          Was dich erwartet
+        </h2>
+        <p className="mt-2 text-[var(--muted-foreground)]">
+          Ein kuratierter Werkzeugkasten für Streamer und Brands.
+        </p>
       </div>
 
       {/* Bento Grid */}
       <div className="mt-10 grid auto-rows-[minmax(140px,auto)] grid-cols-1 gap-6 sm:auto-rows-[minmax(150px,auto)] sm:grid-cols-6">
         {/* Alertbox (groß) */}
-        <Card onMouseMove={handleGlow} className="group relative overflow-hidden sm:col-span-3 sm:row-span-2 p-6 flex flex-col gap-4">
+        <Card
+          onMouseMove={handleGlow}
+          className="group relative overflow-hidden sm:col-span-3 sm:row-span-2 p-6 flex flex-col gap-4"
+        >
           <div className="absolute inset-0 bg-gradient-hero opacity-25" />
           <div
             className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 mix-blend-screen"
@@ -40,7 +54,10 @@ export function Features() {
                 "radial-gradient(720px 720px at var(--x) var(--y), rgba(145,70,255,0.14), transparent 60%), radial-gradient(560px 560px at var(--x) var(--y), rgba(255,255,255,0.08), transparent 62%), radial-gradient(1100px 640px at var(--x) var(--y), rgba(145,70,255,0.05), transparent 80%)",
             }}
           />
-          <span className="absolute right-4 top-4 z-10 inline-block h-2.5 w-2.5 rounded-full bg-[#22c55e] shadow-[0_0_0_4px_rgba(34,197,94,0.18)]" title="Verfügbar" />
+          <span
+            className="absolute right-4 top-4 z-10 inline-block h-2.5 w-2.5 rounded-full bg-[#22c55e] shadow-[0_0_0_4px_rgba(34,197,94,0.18)]"
+            title="Verfügbar"
+          />
           <div className="relative flex items-center gap-3">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-[var(--secondary)]">
               <BellRing className="h-5 w-5" />
@@ -48,12 +65,15 @@ export function Features() {
             <h3 className="text-lg font-semibold">Alertbox für Overlays</h3>
           </div>
           <p className="relative text-sm text-[var(--muted-foreground)]">
-            Zeige Live‑Käufe direkt im Stream – in Echtzeit, anpassbar und performant.
+            Zeige Live‑Käufe direkt im Stream – in Echtzeit, anpassbar und
+            performant.
           </p>
           {/* Overlay Preview */}
           <div className="relative mt-1 h-60 sm:h-64 w-full overflow-hidden rounded-[var(--radius-md)] border border-default bg-[color-mix(in_hsl,var(--muted),black_6%)] p-4">
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(500px_200px_at_20%_20%,rgba(145,70,255,0.18),transparent_60%),radial-gradient(400px_200px_at_80%_60%,rgba(145,70,255,0.12),transparent_60%)]" />
-            <div className="relative text-[10px] uppercase tracking-wide text-[var(--muted-foreground)]">EVENT HISTORY</div>
+            <div className="relative text-[10px] uppercase tracking-wide text-[var(--muted-foreground)]">
+              EVENT HISTORY
+            </div>
             {/* Fake alert toasts: Hoodie, T‑Shirt, Merch‑Box */}
             <div className="absolute inset-x-4 top-10 bottom-4 overflow-hidden sm:left-4 sm:right-auto sm:w-[420px] flex flex-col gap-2">
               {/* Hoodie */}
@@ -64,7 +84,10 @@ export function Features() {
                 </div>
                 <div className="relative min-w-0">
                   <div className="text-sm font-semibold">Neuer Kauf</div>
-                  <div className="text-xs text-[var(--muted-foreground)]">Creator Hoodie · Größe L · <span className="text-white/90">€59,00</span></div>
+                  <div className="text-xs text-[var(--muted-foreground)]">
+                    Creator Hoodie · Größe L ·{" "}
+                    <span className="text-white/90">€59,00</span>
+                  </div>
                 </div>
                 <div className="relative ml-auto h-8 w-8 overflow-hidden rounded-full ring-1 ring-[#9146ff]/40">
                   <div className="h-full w-full bg-[linear-gradient(180deg,rgba(145,70,255,0.7)_0%,rgba(145,70,255,0.4)_100%)]" />
@@ -78,7 +101,10 @@ export function Features() {
                 </div>
                 <div className="relative min-w-0">
                   <div className="text-sm font-semibold">Neuer Kauf</div>
-                  <div className="text-xs text-[var(--muted-foreground)]">Creator T‑Shirt · Größe M · <span className="text-white/90">€29,00</span></div>
+                  <div className="text-xs text-[var(--muted-foreground)]">
+                    Creator T‑Shirt · Größe M ·{" "}
+                    <span className="text-white/90">€29,00</span>
+                  </div>
                 </div>
                 <div className="relative ml-auto h-8 w-8 overflow-hidden rounded-full ring-1 ring-[#9146ff]/40">
                   <div className="h-full w-full bg-[linear-gradient(180deg,rgba(145,70,255,0.7)_0%,rgba(145,70,255,0.4)_100%)]" />
@@ -92,7 +118,10 @@ export function Features() {
                 </div>
                 <div className="relative min-w-0">
                   <div className="text-sm font-semibold">Neuer Kauf</div>
-                  <div className="text-xs text-[var(--muted-foreground)]">Merch‑Box · Limited · <span className="text-white/90">€89,00</span></div>
+                  <div className="text-xs text-[var(--muted-foreground)]">
+                    Merch‑Box · Limited ·{" "}
+                    <span className="text-white/90">€89,00</span>
+                  </div>
                 </div>
                 <div className="relative ml-auto h-8 w-8 overflow-hidden rounded-full ring-1 ring-[#9146ff]/40">
                   <div className="h-full w-full bg-[linear-gradient(180deg,rgba(145,70,255,0.7)_0%,rgba(145,70,255,0.4)_100%)]" />
@@ -106,7 +135,10 @@ export function Features() {
                 </div>
                 <div className="relative min-w-0">
                   <div className="text-sm font-semibold">Neuer Kauf</div>
-                  <div className="text-xs text-[var(--muted-foreground)]">Creator T‑Shirt · Größe L · <span className="text-white/90">€29,00</span></div>
+                  <div className="text-xs text-[var(--muted-foreground)]">
+                    Creator T‑Shirt · Größe L ·{" "}
+                    <span className="text-white/90">€29,00</span>
+                  </div>
                 </div>
                 <div className="relative ml-auto h-8 w-8 overflow-hidden rounded-full ring-1 ring-[#9146ff]/40">
                   <div className="h-full w-full bg-[linear-gradient(180deg,rgba(145,70,255,0.7)_0%,rgba(145,70,255,0.4)_100%)]" />
@@ -119,7 +151,10 @@ export function Features() {
         </Card>
 
         {/* Analytics (groß) */}
-        <Card onMouseMove={handleGlow} className="group relative overflow-hidden sm:col-span-3 sm:row-span-2 p-6 flex flex-col gap-4">
+        <Card
+          onMouseMove={handleGlow}
+          className="group relative overflow-hidden sm:col-span-3 sm:row-span-2 p-6 flex flex-col gap-4"
+        >
           <div className="absolute inset-0 bg-gradient-hero opacity-20" />
           <div
             className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 mix-blend-screen"
@@ -128,7 +163,10 @@ export function Features() {
                 "radial-gradient(720px 720px at var(--x) var(--y), rgba(145,70,255,0.14), transparent 60%), radial-gradient(560px 560px at var(--x) var(--y), rgba(255,255,255,0.08), transparent 62%), radial-gradient(1100px 640px at var(--x) var(--y), rgba(145,70,255,0.05), transparent 80%)",
             }}
           />
-          <span className="absolute right-4 top-4 z-10 inline-block h-2.5 w-2.5 rounded-full bg-[#eab308] shadow-[0_0_0_4px_rgba(234,179,8,0.18)]" title="Coming soon" />
+          <span
+            className="absolute right-4 top-4 z-10 inline-block h-2.5 w-2.5 rounded-full bg-[#eab308] shadow-[0_0_0_4px_rgba(234,179,8,0.18)]"
+            title="Coming soon"
+          />
           <div className="relative flex items-center gap-3">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-[var(--secondary)]">
               <BarChart3 className="h-5 w-5" />
@@ -136,7 +174,8 @@ export function Features() {
             <h3 className="text-lg font-semibold">Analytics & Reporting</h3>
           </div>
           <p className="relative text-sm text-[var(--muted-foreground)]">
-            Umsatz, Konversionsraten, Bestseller und Zeitverläufe – Merch‑KPIs im Blick.
+            Umsatz, Konversionsraten, Bestseller und Zeitverläufe – Merch‑KPIs
+            im Blick.
           </p>
 
           {/* Mini Chart Panel */}
@@ -149,7 +188,10 @@ export function Features() {
             </div>
             <div className="mt-4 grid grid-cols-7 items-end gap-2 sm:gap-3">
               {chartData.map((d) => (
-                <div key={d.label} className="group flex flex-col items-center gap-2">
+                <div
+                  key={d.label}
+                  className="group flex flex-col items-center gap-2"
+                >
                   <div className="relative h-32 sm:h-36 w-full overflow-hidden rounded-md bg-[var(--muted)]/60 ring-1 ring-black/30">
                     <div
                       className="absolute inset-x-0 bottom-0 rounded-t-md bg-[linear-gradient(180deg,rgba(145,70,255,0.95)_0%,rgba(145,70,255,0.6)_100%)] shadow-[0_8px_24px_-10px_rgba(145,70,255,0.8)]"
@@ -157,7 +199,9 @@ export function Features() {
                     />
                     <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0)_46%,rgba(0,0,0,0.08)_54%,rgba(0,0,0,0)_100%)]" />
                   </div>
-                  <span className="text-[10px] tracking-wider text-[var(--muted-foreground)]">{d.label}</span>
+                  <span className="text-[10px] tracking-wider text-[var(--muted-foreground)]">
+                    {d.label}
+                  </span>
                 </div>
               ))}
             </div>
@@ -165,7 +209,10 @@ export function Features() {
         </Card>
 
         {/* Chatbot */}
-        <Card onMouseMove={handleGlow} className="group relative overflow-hidden sm:col-span-2 sm:row-span-1 p-6">
+        <Card
+          onMouseMove={handleGlow}
+          className="group relative overflow-hidden sm:col-span-2 sm:row-span-1 p-6"
+        >
           <div
             className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 mix-blend-screen"
             style={{
@@ -173,24 +220,39 @@ export function Features() {
                 "radial-gradient(520px 520px at var(--x) var(--y), rgba(145,70,255,0.12), transparent 60%), radial-gradient(380px 380px at var(--x) var(--y), rgba(255,255,255,0.06), transparent 62%)",
             }}
           />
-          <span className="absolute right-4 top-4 z-10 inline-block h-2.5 w-2.5 rounded-full bg-[#eab308] shadow-[0_0_0_4px_rgba(234,179,8,0.18)]" title="Coming soon" />
+          <span
+            className="absolute right-4 top-4 z-10 inline-block h-2.5 w-2.5 rounded-full bg-[#22c55e] shadow-[0_0_0_4px_rgba(34,197,94,0.18)]"
+            title="Verfügbar"
+          />
           <div className="relative flex items-center gap-3">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-[var(--secondary)]">
               <Bot className="h-5 w-5" />
             </span>
             <h3 className="text-base font-semibold">streamwear. Chatbot</h3>
           </div>
-          <p className="mt-2 text-sm text-[var(--muted-foreground)]">Nimmt dir Arbeit ab: reagiert auf <span className="font-semibold">!merch</span> mit deinem Shop‑Link.</p>
+          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+            Nimmt dir Arbeit ab: reagiert auf{" "}
+            <span className="font-semibold">!merch</span> mit deinem Shop‑Link.
+          </p>
           {/* Twitch-like Chat Preview */}
           <div className="mt-3 relative rounded-[var(--radius-sm)] border border-default bg-[color-mix(in_hsl,var(--muted),black_4%)] p-3 h-28 overflow-hidden">
-            <div className="text-[10px] uppercase tracking-wide text-[var(--muted-foreground)]">Twitch Chat</div>
+            <div className="text-[10px] uppercase tracking-wide text-[var(--muted-foreground)]">
+              Twitch Chat
+            </div>
             <div className="mt-2 flex flex-col gap-2 text-sm">
               {/* User message */}
               <div className="flex items-start gap-2">
                 <div className="min-w-0">
                   <span className="inline-flex items-center gap-1">
-                    <Image src="/sub.png" alt="Subscriber" width={14} height={14} />
-                    <span className="font-medium text-[#9146ff]">cool_user123</span>
+                    <Image
+                      src="/sub.png"
+                      alt="Subscriber"
+                      width={14}
+                      height={14}
+                    />
+                    <span className="font-medium text-[#9146ff]">
+                      cool_user123
+                    </span>
                   </span>
                   <span className="mx-1 opacity-60">:</span>
                   <span className="font-semibold">!merch</span>
@@ -200,7 +262,12 @@ export function Features() {
               <div className="flex items-start gap-2">
                 <div className="min-w-0">
                   <span className="inline-flex items-center gap-1">
-                    <Image src="/mod.png" alt="Moderator" width={14} height={14} />
+                    <Image
+                      src="/mod.png"
+                      alt="Moderator"
+                      width={14}
+                      height={14}
+                    />
                     <span className="font-medium text-white">streamwear</span>
                   </span>
                   <span className="mx-1 opacity-60">:</span>
@@ -224,7 +291,10 @@ export function Features() {
         </Card>
 
         {/* Giveaways */}
-        <Card onMouseMove={handleGlow} className="group relative overflow-hidden sm:col-span-2 sm:row-span-1 p-6">
+        <Card
+          onMouseMove={handleGlow}
+          className="group relative overflow-hidden sm:col-span-2 sm:row-span-1 p-6"
+        >
           <div
             className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 mix-blend-screen"
             style={{
@@ -232,19 +302,26 @@ export function Features() {
                 "radial-gradient(520px 520px at var(--x) var(--y), rgba(145,70,255,0.12), transparent 60%), radial-gradient(380px 380px at var(--x) var(--y), rgba(255,255,255,0.06), transparent 62%)",
             }}
           />
-          <span className="absolute right-4 top-4 z-10 inline-block h-2.5 w-2.5 rounded-full bg-[#eab308] shadow-[0_0_0_4px_rgba(234,179,8,0.18)]" title="Coming soon" />
+          <span
+            className="absolute right-4 top-4 z-10 inline-block h-2.5 w-2.5 rounded-full bg-[#22c55e] shadow-[0_0_0_4px_rgba(34,197,94,0.18)]"
+            title="Verfügbar"
+          />
           <div className="relative flex items-center gap-3">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-[var(--secondary)]">
               <Gift className="h-5 w-5" />
             </span>
             <h3 className="text-base font-semibold">streamwear. Giveaways</h3>
           </div>
-          <p className="mt-2 text-sm text-[var(--muted-foreground)]">Automatisierte Gewinnspiele inkl. Ziehung und Validierung.</p>
+          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+            Automatisierte Gewinnspiele inkl. Ziehung und Validierung.
+          </p>
           {/* Giveaway Preview */}
           <div className="mt-3 rounded-[var(--radius-sm)] border border-default bg-[color-mix(in_hsl,var(--muted),black_4%)] p-3">
             <div className="flex items-center justify-between text-sm">
               <div className="font-medium">Hoodie Giveaway</div>
-              <div className="rounded-md bg-black/30 px-2 py-0.5 text-xs ring-1 ring-black/40">Ends in 02:14</div>
+              <div className="rounded-md bg-black/30 px-2 py-0.5 text-xs ring-1 ring-black/40">
+                Ends in 02:14
+              </div>
             </div>
             <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-black/30 ring-1 ring-black/30">
               <div className="h-full w-1/2 bg-[linear-gradient(90deg,rgba(145,70,255,1)_0%,rgba(145,70,255,0.6)_100%)]" />
@@ -257,7 +334,10 @@ export function Features() {
         </Card>
 
         {/* Realtime Notifications */}
-        <Card onMouseMove={handleGlow} className="group relative overflow-hidden sm:col-span-2 sm:row-span-1 p-6">
+        <Card
+          onMouseMove={handleGlow}
+          className="group relative overflow-hidden sm:col-span-2 sm:row-span-1 p-6"
+        >
           <div
             className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 mix-blend-screen"
             style={{
@@ -265,24 +345,34 @@ export function Features() {
                 "radial-gradient(520px 520px at var(--x) var(--y), rgba(145,70,255,0.12), transparent 60%), radial-gradient(380px 380px at var(--x) var(--y), rgba(255,255,255,0.06), transparent 62%)",
             }}
           />
-          <span className="absolute right-4 top-4 z-10 inline-block h-2.5 w-2.5 rounded-full bg-[#eab308] shadow-[0_0_0_4px_rgba(234,179,8,0.18)]" title="Coming soon" />
+          <span
+            className="absolute right-4 top-4 z-10 inline-block h-2.5 w-2.5 rounded-full bg-[#eab308] shadow-[0_0_0_4px_rgba(234,179,8,0.18)]"
+            title="Coming soon"
+          />
           <div className="relative flex items-center gap-3">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-[var(--secondary)]">
               <Bell className="h-5 w-5" />
             </span>
             <h3 className="text-base font-semibold">Realtime Notifications</h3>
           </div>
-          <p className="mt-2 text-sm text-[var(--muted-foreground)]">Benachrichtigungen für Verkäufe, Payouts & mehr.</p>
+          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+            Benachrichtigungen für Verkäufe, Payouts & mehr.
+          </p>
           {/* Notifications Preview */}
           <div className="mt-3 space-y-2">
             {[
               { t: "Sale: 2× Creator Cap", time: "vor 1 Min" },
               { t: "Payout received", time: "vor 1 Std" },
             ].map((n) => (
-              <div key={n.t} className="flex items-center gap-3 rounded-[var(--radius-sm)] border border-default bg-[color-mix(in_hsl,var(--muted),black_4%)] px-3 py-2">
+              <div
+                key={n.t}
+                className="flex items-center gap-3 rounded-[var(--radius-sm)] border border-default bg-[color-mix(in_hsl,var(--muted),black_4%)] px-3 py-2"
+              >
                 <span className="h-2.5 w-2.5 rounded-full bg-[#9146ff] shadow-[0_0_0_3px_rgba(145,70,255,0.25)]" />
                 <div className="flex-1 text-sm">{n.t}</div>
-                <div className="text-xs text-[var(--muted-foreground)]">{n.time}</div>
+                <div className="text-xs text-[var(--muted-foreground)]">
+                  {n.time}
+                </div>
               </div>
             ))}
           </div>
@@ -291,5 +381,3 @@ export function Features() {
     </section>
   );
 }
-
-
