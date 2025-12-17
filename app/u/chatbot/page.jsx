@@ -209,7 +209,7 @@ export default function ChatbotSettings() {
     <>
       <SectionTitle
         title="Chatbot"
-        subtitle="Steuere Trigger und Antworten, die dein Chatbot posten soll."
+        subtitle="Steuere Trigger und Antworten, die dein Chatbot posten soll. Stelle sicher, dass unser Chatbot in deinem Stream mindestens die Rolle 'VIP' hat, damit der Chatbot zuverlässig funktioniert."
       />
 
       <Card className="p-6 grid gap-4">
