@@ -575,8 +575,7 @@ export default async function GiveawayRedeemPage({ params, searchParams }) {
                     Gleich geht’s raus zu dir
                   </h2>
                   <p className="text-sm text-muted-foreground">
-                    Einmal Adresse eintragen, dann kümmert sich unser Team –
-                    kein Spam, nur dein Gewinn. GG!
+                    Einmal Adresse eintragen, dann kümmert sich unser Team zeitnah um alles weitere!
                   </p>
                 </div>
 
@@ -642,10 +641,6 @@ export default async function GiveawayRedeemPage({ params, searchParams }) {
                   <Button className="w-full md:w-auto" type="submit">
                     Absenden
                   </Button>
-                  <p className="text-xs text-muted-foreground">
-                    Wir speichern nur, was wir für den Versand brauchen. No
-                    copypasta, versprochen.
-                  </p>
                 </div>
               </Card>
             </form>
