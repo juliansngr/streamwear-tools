@@ -121,13 +121,13 @@ export async function POST(request) {
   if (giveaway.giveaway_order_id) {
     const { data: orderRow, error: oError } = await supabaseAdmin
       .from("giveaway_orders")
-      .select("shopify_product_id, shopify_variant_id")
+      .select("product_id, variant_id")
       .eq("id", giveaway.giveaway_order_id)
       .maybeSingle();
 
     if (!oError && orderRow) {
-      shopifyProductId = orderRow.shopify_product_id ?? null;
-      shopifyVariantId = orderRow.shopify_variant_id ?? null;
+      shopifyProductId = orderRow.product_id ?? null;
+      shopifyVariantId = orderRow.variant_id ?? null;
     }
   }
 

@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createClient as createServerSupabaseClient } from "@/supabase/serverClient";
+import { supabaseAdmin } from "@/supabase/supabaseAdmin";
 import { getShopifyProductDetails } from "@/lib/shopify";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -154,14 +155,27 @@ async function loadData(code) {
   const giveawayOrderId = giveaway?.giveaway_order_id || null;
   const claimed = giveaway?.claimed || false;
 
+
+
   // 3) Order laden -> Produkt-/Variant-IDs
-  const { data: order } = giveawayOrderId
+/*   const { data: order, error: orderError } = giveawayOrderId
     ? await supabase
         .from("giveaway_orders")
         .select("product_id, variant_id, buyer_twitch_username")
         .eq("id", giveawayOrderId)
         .maybeSingle()
-    : { data: null };
+    : { data: null, error: null }; */
+
+  const { data: order, error: orderError } = await supabaseAdmin
+    .from("giveaway_orders")
+    .select("product_id, variant_id, buyer_twitch_username")
+    .eq("id", giveawayOrderId)
+    .maybeSingle();
+
+  console.log("giveawayOrderId",giveawayOrderId);
+
+  console.log(order);
+  console.log("error",orderError);
 
   const productId = order?.product_id || null;
   const variantId = order?.variant_id || null;
@@ -513,7 +527,7 @@ export default async function GiveawayRedeemPage({ params, searchParams }) {
                     )}
                   </div>
 
-                  {variants.length > 0 && (
+                  {variants.length > 1 && (
                     <div className="grid gap-2">
                       <p className="text-xs uppercase tracking-wide text-muted-foreground">
                         Variante wählen
