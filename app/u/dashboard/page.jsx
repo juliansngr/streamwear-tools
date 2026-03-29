@@ -27,8 +27,10 @@ export default async function Dashboard() {
             "shopify_order_id",
             "order_name",
             "order_created_at",
+            "currency",
             "financial_status",
             "discount_code",
+            "commission_amount",
             "shop_orders(cancelled_at)",
           ].join(","),
         )
@@ -40,6 +42,7 @@ export default async function Dashboard() {
     : { data: null };
 
   const ordersLast30dCount = countUniqueVisibleOrders(itemsLast30d || []);
+  const commissionLast30dLabel = formatCommissionSum(itemsLast30d || []);
 
   const { data: recentItems } = profileData?.uuid
     ? await supabase
@@ -100,15 +103,19 @@ export default async function Dashboard() {
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <div className="text-sm text-muted-foreground">Provision (30T)</div>
-            <SoonBadge />
+            {hasConnector ? null : <SoonBadge />}
           </div>
-          <div className="mt-1 text-2xl font-semibold">—</div>
+          <div className="mt-1 text-2xl font-semibold tabular-nums">
+            {hasConnector ? commissionLast30dLabel : "—"}
+          </div>
         </Card>
       </div>
 
       <Card className="mt-6 p-6">
         <div className="mb-3 flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">Aktivität</div>
+          <div className="text-sm text-muted-foreground">
+            Aktivität (seit Februar 2026)
+          </div>
         </div>
         {activityGroups?.length > 0 ? (
           <div className="space-y-4">
@@ -345,6 +352,29 @@ function formatMoney(amount, currency) {
   } catch {
     return `${amount.toFixed(2)} ${c}`;
   }
+}
+
+function formatCommissionSum(items) {
+  const sums = new Map(); // currency -> number
+
+  for (const it of items || []) {
+    if (isOrderCancelled(it)) continue;
+    if (hasInternalDiscountCode(it)) continue;
+    const amountRaw = it?.commission_amount;
+    if (amountRaw == null) continue;
+
+    const currency = it?.currency || "EUR";
+    const amount = toNumber(amountRaw);
+    const prev = sums.get(currency) || 0;
+    sums.set(currency, prev + amount);
+  }
+
+  const parts = Array.from(sums.entries())
+    .filter(([, amt]) => Number.isFinite(amt) && Math.abs(amt) > 0.0000001)
+    .map(([cur, amt]) => formatMoney(amt, cur));
+
+  if (!parts.length) return formatMoney(0, "EUR");
+  return parts.join(" · ");
 }
 
 function formatCustomer(email) {
