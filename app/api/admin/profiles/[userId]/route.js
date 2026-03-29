@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/supabase/serverClient";
 import { supabaseAdmin } from "@/supabase/supabaseAdmin";
+import { getPublicTableColumns } from "@/lib/shopify-webhook/persist/dbColumnsCache";
 
 export const runtime = "nodejs";
 
@@ -41,12 +42,20 @@ const EDITABLE_FIELDS = new Set([
   "alertbox_text",
   "features",
   "role",
+  "commission_rate",
 ]);
 
 function normalizeRole(v) {
   const r = String(v || "").trim().toLowerCase();
   if (r === "admin") return "admin";
   return "streamer";
+}
+
+function normalizeCommissionRate(v) {
+  const n = typeof v === "number" ? v : Number.parseFloat(String(v ?? "").replace(",", "."));
+  if (!Number.isFinite(n)) return null;
+  // 0.00 .. 1.00 (e.g. 0.2 = 20%)
+  return Math.min(1, Math.max(0, n));
 }
 
 export async function GET(_request, context) {
@@ -108,6 +117,15 @@ export async function PATCH(request, context) {
 
   if ("role" in updates) {
     updates.role = normalizeRole(updates.role);
+  }
+
+  if ("commission_rate" in updates) {
+    updates.commission_rate = normalizeCommissionRate(updates.commission_rate);
+  }
+
+  const cols = await getPublicTableColumns("profiles");
+  if (cols && !cols.has("commission_rate")) {
+    delete updates.commission_rate;
   }
 
   if (!Object.keys(updates).length) {

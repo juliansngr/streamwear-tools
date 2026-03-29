@@ -55,6 +55,7 @@ export function AdminUsersCard() {
   const [inviteTwitch, setInviteTwitch] = useState("");
   const [inviteRole, setInviteRole] = useState("streamer");
   const [inviteCollectionHandle, setInviteCollectionHandle] = useState("");
+  const [inviteCommissionRate, setInviteCommissionRate] = useState("0.20");
   const [inviteLoading, setInviteLoading] = useState(false);
   const [inviteLink, setInviteLink] = useState("");
 
@@ -127,6 +128,7 @@ export function AdminUsersCard() {
       alertbox_text: editing.alertbox_text ?? null,
       role: editing.role ?? "streamer",
       features,
+      commission_rate: editing.commission_rate ?? null,
     };
 
     try {
@@ -171,6 +173,7 @@ export function AdminUsersCard() {
             twitch_username: inviteTwitch.trim() || null,
             collection_handle: inviteCollectionHandle.trim() || null,
             role: inviteRole,
+            commission_rate: inviteCommissionRate.trim() || null,
           },
         }),
       });
@@ -323,6 +326,15 @@ export function AdminUsersCard() {
                 />
               </div>
               <div className="space-y-1">
+                <div className="text-xs text-muted-foreground">Commission Rate (z.B. 0.20)</div>
+                <Input
+                  value={safeString(editing.commission_rate ?? "")}
+                  onChange={(e) =>
+                    setEditing((p) => ({ ...p, commission_rate: e.target.value }))
+                  }
+                />
+              </div>
+              <div className="space-y-1">
                 <div className="text-xs text-muted-foreground">Role</div>
                 <select
                   className="flex h-10 w-full cursor-pointer rounded-sm border border-default bg-background px-3 py-2 text-sm text-foreground shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -388,6 +400,7 @@ export function AdminUsersCard() {
           setInviteTwitch("");
           setInviteRole("streamer");
           setInviteCollectionHandle("");
+          setInviteCommissionRate("0.20");
           setInviteLoading(false);
           setInviteLink("");
         }
@@ -433,6 +446,13 @@ export function AdminUsersCard() {
                 <Input
                   value={inviteCollectionHandle}
                   onChange={(e) => setInviteCollectionHandle(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <div className="text-xs text-muted-foreground">Commission Rate (z.B. 0.20)</div>
+                <Input
+                  value={inviteCommissionRate}
+                  onChange={(e) => setInviteCommissionRate(e.target.value)}
                 />
               </div>
             </div>

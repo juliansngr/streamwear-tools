@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/supabase/serverClient";
 import { supabaseAdmin } from "@/supabase/supabaseAdmin";
+import { getPublicTableColumns } from "@/lib/shopify-webhook/persist/dbColumnsCache";
 
 export const runtime = "nodejs";
 
@@ -86,6 +87,13 @@ export async function POST(request) {
     if (profile?.collection_handle != null) nextProfile.collection_handle = profile.collection_handle;
     if (profile?.alertbox_text != null) nextProfile.alertbox_text = profile.alertbox_text;
     if (profile?.features != null) nextProfile.features = profile.features;
+    const cols = await getPublicTableColumns("profiles");
+    if (cols?.has?.("commission_rate") && profile?.commission_rate != null) {
+      const raw = profile.commission_rate;
+      const n =
+        typeof raw === "number" ? raw : Number.parseFloat(String(raw).replace(",", "."));
+      if (Number.isFinite(n)) nextProfile.commission_rate = Math.min(1, Math.max(0, n));
+    }
 
     // user_id scheint bei dir nicht unique zu sein -> kein ON CONFLICT möglich.
     // Daher: existiert ein Profil? -> update, sonst insert.

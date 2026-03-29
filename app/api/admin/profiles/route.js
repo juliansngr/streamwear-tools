@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/supabase/serverClient";
 import { supabaseAdmin } from "@/supabase/supabaseAdmin";
+import { getPublicTableColumns } from "@/lib/shopify-webhook/persist/dbColumnsCache";
 
 export const runtime = "nodejs";
 
@@ -45,11 +46,23 @@ export async function GET(request) {
     ? Math.min(Math.max(limitRaw, 1), 200)
     : 50;
 
+  const cols = await getPublicTableColumns("profiles");
+  const selectFields = [
+    "uuid",
+    "user_id",
+    "created_at",
+    "display_name",
+    "twitch_username",
+    "collection_handle",
+    "role",
+    cols?.has?.("commission_rate") ? "commission_rate" : null,
+  ]
+    .filter(Boolean)
+    .join(",");
+
   let query = supabaseAdmin
     .from("profiles")
-    .select(
-      "uuid, user_id, created_at, display_name, twitch_username, collection_handle, role",
-    )
+    .select(selectFields)
     .order("created_at", { ascending: false })
     .limit(limit);
 
