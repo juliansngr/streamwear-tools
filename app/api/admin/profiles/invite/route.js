@@ -59,7 +59,9 @@ export async function POST(request) {
     desiredRoleRaw === "admin" ? "admin" : "streamer";
 
   const origin = new URL(request.url).origin;
-  const redirectTo = `${origin}/u/dashboard`;
+  // IMPORTANT: redirect to auth callback so session is established
+  // before middleware-protected /u routes are loaded.
+  const redirectTo = `${origin}/auth/callback`;
 
   let invitedUserId = null;
   const admin = supabaseAdmin.auth.admin;
