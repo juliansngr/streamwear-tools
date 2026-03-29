@@ -15,7 +15,7 @@ async function loadData() {
   }
 
   const { data: connector, error: connectorError } = await supabase
-    .from("shopify_connectors")
+    .from("profiles")
     .select("uuid, features")
     .eq("user_id", userId)
     .limit(1)
@@ -30,7 +30,7 @@ async function loadData() {
   const { data: orders, error: ordersError } = await supabase
     .from("giveaway_orders")
     .select(
-      "id, streamer_uuid, shopify_order_id, shopify_line_item_id, product_id, variant_id, buyer_twitch_username"
+      "id, streamer_uuid, shopify_order_id, shopify_line_item_id, product_id, variant_id, buyer_twitch_username",
     )
     .eq("streamer_uuid", streamerUuid)
     .order("created_at", { ascending: false });
@@ -80,7 +80,7 @@ async function loadData() {
         giveaway: giveaway || null,
         winner: winner ? { ...winner, winnerDetailId } : null,
       };
-    })
+    }),
   );
 
   return { giveaways: enriched, featureEnabled };
@@ -94,19 +94,19 @@ async function toggleGiveawaysFeature(previouslyEnabled) {
   if (!userId) throw new Error("Nicht eingeloggt.");
 
   const { data: connector } = await supabase
-    .from("shopify_connectors")
+    .from("profiles")
     .select("uuid, features")
     .eq("user_id", userId)
     .limit(1)
     .maybeSingle();
 
-  if (!connector?.uuid) throw new Error("Kein Shopify-Connector gefunden.");
+  if (!connector?.uuid) throw new Error("Kein Profile gefunden.");
 
   const currentFeatures = connector.features || {};
   const nextFeatures = { ...currentFeatures, giveaways: !previouslyEnabled };
 
   const { error } = await supabase
-    .from("shopify_connectors")
+    .from("profiles")
     .update({ features: nextFeatures })
     .eq("uuid", connector.uuid);
 
@@ -166,7 +166,7 @@ export default async function GiveawaysSettings() {
         <>
           <GiveawaysList
             giveaways={giveaways.filter(
-              (g) => g.giveaway?.status !== "finished"
+              (g) => g.giveaway?.status !== "finished",
             )}
           />
           {giveaways.some((g) => g.giveaway?.status === "finished") && (
@@ -177,7 +177,7 @@ export default async function GiveawaysSettings() {
               />
               <GiveawaysList
                 giveaways={giveaways.filter(
-                  (g) => g.giveaway?.status === "finished"
+                  (g) => g.giveaway?.status === "finished",
                 )}
               />
             </div>

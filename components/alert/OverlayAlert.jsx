@@ -25,7 +25,7 @@ export function OverlayAlert({
         }
         const supabase = createBrowserClient();
         const { data, error } = await supabase
-          .from("shopify_connectors")
+          .from("profiles")
           .select("alertbox_text")
           .eq("uuid", uuid)
           .limit(1)

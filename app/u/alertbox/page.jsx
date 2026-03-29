@@ -25,7 +25,7 @@ export default function AlertboxSettings() {
         if (!currentUserId) return;
         setUserId(currentUserId);
         const { data, error } = await supabase
-          .from("shopify_connectors")
+          .from("profiles")
           .select("uuid")
           .eq("user_id", currentUserId)
           .limit(1)
@@ -33,17 +33,19 @@ export default function AlertboxSettings() {
         if (error) return;
         const uuidVal = data?.uuid;
         if (uuidVal) {
-          const origin = typeof window !== "undefined" ? window.location.origin : "";
+          const origin =
+            typeof window !== "undefined" ? window.location.origin : "";
           setOverlayUrl(`${origin}/alertbox/${uuidVal}`);
           setUuid(uuidVal);
         }
 
-        const { data: alertboxSubtitle, error: alertboxSubtitleError } = await supabase
-          .from("shopify_connectors")
-          .select("alertbox_text")
-          .eq("user_id", currentUserId)
-          .limit(1)
-          .maybeSingle();
+        const { data: alertboxSubtitle, error: alertboxSubtitleError } =
+          await supabase
+            .from("profiles")
+            .select("alertbox_text")
+            .eq("user_id", currentUserId)
+            .limit(1)
+            .maybeSingle();
         if (alertboxSubtitleError) return;
         setAlertboxSubtitle(alertboxSubtitle?.alertbox_text);
       } finally {
@@ -64,7 +66,7 @@ export default function AlertboxSettings() {
     try {
       const supabase = createBrowserClient();
       const { error } = await supabase
-        .from("shopify_connectors")
+        .from("profiles")
         .update({ alertbox_text: alertboxSubtitle })
         .eq("user_id", userId)
         .limit(1)
@@ -81,25 +83,40 @@ export default function AlertboxSettings() {
   };
   return (
     <>
-      <SectionTitle title={(
-        <span className="inline-flex items-center gap-2">
-          Alertbox
-          <span className="rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-[#9146ff]/15 text-[#c6a3ff] ring-1 ring-[#9146ff]/30">Beta</span>
-        </span>
-      )} subtitle="Einstellungen für Overlays." />
+      <SectionTitle
+        title={
+          <span className="inline-flex items-center gap-2">
+            Alertbox
+            <span className="rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide bg-[#9146ff]/15 text-[#c6a3ff] ring-1 ring-[#9146ff]/30">
+              Beta
+            </span>
+          </span>
+        }
+        subtitle="Einstellungen für Overlays."
+      />
       <Card className="p-6 grid gap-6">
         <div className="grid gap-2">
           <label className="text-sm">Dein Overlay-Link</label>
           <div className="flex gap-2">
-            <Input value={overlayUrl} readOnly placeholder={loading ? "Lade…" : "Kein Link gefunden"} />
-            <Button onClick={copyUrl} disabled={!overlayUrl}>Kopieren</Button>
+            <Input
+              value={overlayUrl}
+              readOnly
+              placeholder={loading ? "Lade…" : "Kein Link gefunden"}
+            />
+            <Button onClick={copyUrl} disabled={!overlayUrl}>
+              Kopieren
+            </Button>
           </div>
         </div>
         <div className="grid gap-2">
           <label className="text-sm">Dein Alertbox-Text</label>
           <p className="text-xs text-[var(--muted-foreground)] max-w-lg">{`Verwende {{TwitchUserName}} in deinem Text, um den Namen des Twitch-Users anzuzeigen, sollte er bei der Bestellung angegeben worden sein.`}</p>
           <div className="flex gap-2">
-            <Input value={alertboxSubtitle} onChange={(e) => setAlertboxSubtitle(e.target.value)} placeholder={loading ? "Lade…" : "Kein Link gefunden"} />
+            <Input
+              value={alertboxSubtitle}
+              onChange={(e) => setAlertboxSubtitle(e.target.value)}
+              placeholder={loading ? "Lade…" : "Kein Link gefunden"}
+            />
             <Button onClick={saveAlertboxSubtitle}>Speichern</Button>
           </div>
         </div>
@@ -125,23 +142,29 @@ export default function AlertboxSettings() {
           </div>
         </div>
 
-<div className="grid gap-2">
-  <label className="text-sm">Anleitung</label>
-  <div className="rounded-[var(--radius-md)] border border-default p-4 bg-[color-mix(in_hsl,var(--muted),black_4%)]">
-    <ol className="list-decimal pl-5 space-y-2 text-sm">
-      <li>Öffne OBS und füge eine neue Browser-Quelle hinzu.</li>
-      <li>
-        Setze die URL auf
-        <span className="ml-1 font-mono px-1.5 py-0.5 rounded bg-[color-mix(in_hsl,var(--muted),black_4%)] border border-default break-all inline-block align-baseline">
-          {overlayUrl || "Noch kein Link – oben zuerst verbinden."}
-        </span>
-      </li>
-      <li>Breite: 800 px (empfohlen). Höhe: 800 px (empfohlen).</li>
-      <li>Optional: Quelle bei Nicht-Sichtbarkeit deaktivieren, um CPU zu sparen.</li>
-      <li>Nach Änderungen am Text die Quelle/Szene kurz neu laden, um Updates zu sehen.</li>
-    </ol>
-  </div>
-</div>
+        <div className="grid gap-2">
+          <label className="text-sm">Anleitung</label>
+          <div className="rounded-[var(--radius-md)] border border-default p-4 bg-[color-mix(in_hsl,var(--muted),black_4%)]">
+            <ol className="list-decimal pl-5 space-y-2 text-sm">
+              <li>Öffne OBS und füge eine neue Browser-Quelle hinzu.</li>
+              <li>
+                Setze die URL auf
+                <span className="ml-1 font-mono px-1.5 py-0.5 rounded bg-[color-mix(in_hsl,var(--muted),black_4%)] border border-default break-all inline-block align-baseline">
+                  {overlayUrl || "Noch kein Link – oben zuerst verbinden."}
+                </span>
+              </li>
+              <li>Breite: 800 px (empfohlen). Höhe: 800 px (empfohlen).</li>
+              <li>
+                Optional: Quelle bei Nicht-Sichtbarkeit deaktivieren, um CPU zu
+                sparen.
+              </li>
+              <li>
+                Nach Änderungen am Text die Quelle/Szene kurz neu laden, um
+                Updates zu sehen.
+              </li>
+            </ol>
+          </div>
+        </div>
       </Card>
     </>
   );
@@ -157,5 +180,3 @@ function SectionTitle({ title, subtitle }) {
     </header>
   );
 }
-
-

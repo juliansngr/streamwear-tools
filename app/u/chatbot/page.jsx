@@ -44,14 +44,14 @@ export default function ChatbotSettings() {
         if (userError) throw userError;
         if (!user?.id) {
           setLoadError(
-            "Bitte melde dich an, um Chatbot-Commands zu verwalten."
+            "Bitte melde dich an, um Chatbot-Commands zu verwalten.",
           );
           setLoading(false);
           return;
         }
         setUserId(user.id);
         const { data: connector } = await supabase
-          .from("shopify_connectors")
+          .from("profiles")
           .select("twitch_username")
           .eq("user_id", user.id)
           .limit(1)
@@ -105,7 +105,7 @@ export default function ChatbotSettings() {
     const triggerValue = sanitizeTrigger(draft.trigger)?.trim() || "";
     if (!triggerValue || !isValidTrigger(triggerValue)) {
       toast.error(
-        "Trigger darf nur Buchstaben enthalten und darf nicht leer sein."
+        "Trigger darf nur Buchstaben enthalten und darf nicht leer sein.",
       );
       return;
     }
@@ -132,8 +132,8 @@ export default function ChatbotSettings() {
                 trigger: triggerValue,
                 channel_active_on: channelActiveOn,
               }
-            : c
-        )
+            : c,
+        ),
       );
       cancelEdit(id);
     } catch (err) {
@@ -169,12 +169,12 @@ export default function ChatbotSettings() {
     if (!triggerValue || !answerValue) return;
     if (!isValidTrigger(triggerValue)) {
       toast.error(
-        "Trigger darf nur Buchstaben enthalten und darf nicht leer sein."
+        "Trigger darf nur Buchstaben enthalten und darf nicht leer sein.",
       );
       return;
     }
     const duplicate = commands.some(
-      (c) => c.trigger?.toLowerCase() === triggerValue.toLowerCase()
+      (c) => c.trigger?.toLowerCase() === triggerValue.toLowerCase(),
     );
     if (duplicate) {
       toast.error("Diesen Trigger gibt es schon.");
@@ -253,7 +253,7 @@ export default function ChatbotSettings() {
                             updateDraft(
                               cmd.id,
                               "trigger",
-                              sanitizeTrigger(e.target.value)
+                              sanitizeTrigger(e.target.value),
                             )
                           }
                           className="h-9 w-full rounded-lg border border-border/25 bg-[color-mix(in_hsl,var(--card),black_3%)] px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary/30"

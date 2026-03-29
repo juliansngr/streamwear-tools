@@ -17,7 +17,7 @@ export async function POST(request) {
   if (!giveawayId) {
     return NextResponse.json(
       { error: "giveawayId ist erforderlich" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -31,20 +31,20 @@ export async function POST(request) {
   if (gError) {
     return NextResponse.json(
       { error: `Fehler beim Laden des Giveaways: ${gError.message}` },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
   if (!giveaway) {
     return NextResponse.json(
       { error: "Giveaway nicht gefunden" },
-      { status: 404 }
+      { status: 404 },
     );
   }
 
-  // 2) Zugehörigen shopify_connectors-Eintrag holen (streamer_uuid → connector.uuid)
+  // 2) Zugehörigen profiles-Eintrag holen (streamer_uuid → connector.uuid)
   const { data: connector, error: cError } = await supabaseAdmin
-    .from("shopify_connectors")
+    .from("profiles")
     .select("user_id")
     .eq("uuid", giveaway.streamer_uuid)
     .maybeSingle();
@@ -52,14 +52,14 @@ export async function POST(request) {
   if (cError) {
     return NextResponse.json(
       { error: `Fehler beim Laden des Connectors: ${cError.message}` },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
   if (!connector) {
     return NextResponse.json(
-      { error: "Kein passender shopify_connectors-Eintrag gefunden" },
-      { status: 404 }
+      { error: "Kein passender profiles-Eintrag gefunden" },
+      { status: 404 },
     );
   }
 
@@ -67,7 +67,7 @@ export async function POST(request) {
   if (giveaway.status !== "ended" && giveaway.status !== "running") {
     return NextResponse.json(
       { error: "Giveaway ist bereits abgeschlossen" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -80,14 +80,14 @@ export async function POST(request) {
   if (pError) {
     return NextResponse.json(
       { error: `Fehler beim Laden der Teilnehmer: ${pError.message}` },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
   if (!participants || participants.length === 0) {
     return NextResponse.json(
       { error: "Keine Teilnehmer für dieses Giveaway vorhanden" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -110,7 +110,7 @@ export async function POST(request) {
   if (uError) {
     return NextResponse.json(
       { error: `Fehler beim Speichern des Gewinners: ${uError.message}` },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -144,14 +144,14 @@ export async function POST(request) {
       },
       {
         onConflict: "giveaway_id", // ensures 1 row per giveaway
-      }
+      },
     );
 
   if (dError) {
     // kein Hard-Fehler, aber wir loggen es – Versanddetails kann man notfalls manuell nachtragen
     console.error(
       "Fehler beim Anlegen von giveaway_winner_details:",
-      dError.message
+      dError.message,
     );
   }
 
@@ -161,6 +161,6 @@ export async function POST(request) {
       winner,
       winnerDetail,
     },
-    { status: 200 }
+    { status: 200 },
   );
 }

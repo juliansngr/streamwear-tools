@@ -36,7 +36,7 @@ async function verifyShopifyHmac(request) {
     .digest("base64");
   const ok = crypto.timingSafeEqual(
     Buffer.from(digest),
-    Buffer.from(hmacHeader)
+    Buffer.from(hmacHeader),
   );
   dbg("verify:result", {
     ok,
@@ -66,7 +66,7 @@ async function fetchCollectionsForProduct(productId) {
       {
         headers,
         cache: "no-store",
-      }
+      },
     );
     dbg("fetch:collects:status", {
       ok: collectsRes.ok,
@@ -86,7 +86,7 @@ async function fetchCollectionsForProduct(productId) {
         const idsParam = collectionIds.join(",");
         const colsRes = await fetch(
           `${base}/custom_collections.json?ids=${idsParam}`,
-          { headers, cache: "no-store" }
+          { headers, cache: "no-store" },
         );
         dbg("fetch:collections:status", {
           ok: colsRes.ok,
@@ -123,7 +123,7 @@ async function fetchCollectionsForProduct(productId) {
       {
         headers,
         cache: "no-store",
-      }
+      },
     );
     dbg("fetch:smart:status", {
       ok: smartRes.ok,
@@ -232,7 +232,7 @@ export async function POST(request) {
 
   // Giveaway-Flag aus note_attributes (Cart-Attribute: attributes[giveaway])
   const giveawayAttr = (order?.note_attributes || []).find(
-    (attr) => attr.name === "giveaway"
+    (attr) => attr.name === "giveaway",
   );
   const hasGiveawayAttribute = giveawayAttr?.value === "yes";
 
@@ -244,7 +244,7 @@ export async function POST(request) {
   // Extract username
 
   const usernameAttr = (order?.note_attributes || []).find(
-    (attr) => attr.name === "username"
+    (attr) => attr.name === "username",
   );
   const username = usernameAttr?.value || "";
   dbg("username:extracted", { username });
@@ -252,8 +252,8 @@ export async function POST(request) {
   // Extract product ids (line_items)
   const productIds = Array.from(
     new Set(
-      (order?.line_items || []).map((li) => li.product_id).filter(Boolean)
-    )
+      (order?.line_items || []).map((li) => li.product_id).filter(Boolean),
+    ),
   );
   dbg("products:ids", {
     count: productIds.length,
@@ -284,11 +284,11 @@ export async function POST(request) {
 
   // Map collection_handle → streamer uuid
   dbg("supabase:query", {
-    table: "shopify_connectors",
+    table: "profiles",
     handlesCount: handles.length,
   });
   const { data: streamers, error } = await supabaseAdmin
-    .from("shopify_connectors")
+    .from("profiles")
     .select("uuid, collection_handle, user_id")
     .in("collection_handle", handles);
   dbg("supabase:result", {
@@ -341,7 +341,7 @@ export async function POST(request) {
 
       // Streamer finden, dessen collection_handle eine dieser Collections ist
       const streamer = (streamers || []).find((s) =>
-        productHandles.includes(s.collection_handle)
+        productHandles.includes(s.collection_handle),
       );
 
       if (!streamer) {

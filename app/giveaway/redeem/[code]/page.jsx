@@ -116,7 +116,7 @@ async function fetchProductWithVariants(productId) {
         },
         body: JSON.stringify({ query, variables: { id: productGid } }),
         next: { revalidate: 600 },
-      }
+      },
     );
 
     if (!res.ok) {
@@ -148,17 +148,15 @@ async function loadData(code) {
   const { data: giveaway } = await supabase
     .from("giveaways")
     .select(
-      "id, claimed, giveaway_order_id, streamer_uuid, winner_twitch_display_name, winner_twitch_login"
+      "id, claimed, giveaway_order_id, streamer_uuid, winner_twitch_display_name, winner_twitch_login",
     )
     .eq("id", detail.giveaway_id)
     .maybeSingle();
   const giveawayOrderId = giveaway?.giveaway_order_id || null;
   const claimed = giveaway?.claimed || false;
 
-
-
   // 3) Order laden -> Produkt-/Variant-IDs
-/*   const { data: order, error: orderError } = giveawayOrderId
+  /*   const { data: order, error: orderError } = giveawayOrderId
     ? await supabase
         .from("giveaway_orders")
         .select("product_id, variant_id, buyer_twitch_username")
@@ -172,10 +170,10 @@ async function loadData(code) {
     .eq("id", giveawayOrderId)
     .maybeSingle();
 
-  console.log("giveawayOrderId",giveawayOrderId);
+  console.log("giveawayOrderId", giveawayOrderId);
 
   console.log(order);
-  console.log("error",orderError);
+  console.log("error", orderError);
 
   const productId = order?.product_id || null;
   const variantId = order?.variant_id || null;
@@ -184,7 +182,7 @@ async function loadData(code) {
   let streamerDisplayName = null;
   if (giveaway?.streamer_uuid) {
     const { data: streamerData } = await supabase
-      .from("shopify_connectors")
+      .from("profiles")
       .select("display_name")
       .eq("uuid", giveaway.streamer_uuid)
       .maybeSingle();
@@ -269,7 +267,7 @@ async function loadData(code) {
     {
       productId,
       variantId,
-    }
+    },
   );
   if (shopErrors) {
     product.title = "Produkt konnte nicht geladen werden";
@@ -424,8 +422,8 @@ export default async function GiveawayRedeemPage({ params, searchParams }) {
             {winnerName && product?.title && streamerName
               ? `Herzlichen Glückwunsch! Du hast ${product.title} bei ${streamerName} im Stream gewonnen. Wir brauchen nur noch ein paar Daten von dir, damit wir dir den Gewinn zukommen lassen können.`
               : streamerName
-              ? `Glückwunsch! Du hast auf dem Kanal von ${streamerName} etwas gewonnen. Wir brauchen nur noch ein paar Daten von dir, damit wir dir den Gewinn zukommen lassen können.`
-              : "Glückwunsch zum Gewinn! Wir brauchen nur noch ein paar Daten von dir, damit wir dir den Gewinn zukommen lassen können."}
+                ? `Glückwunsch! Du hast auf dem Kanal von ${streamerName} etwas gewonnen. Wir brauchen nur noch ein paar Daten von dir, damit wir dir den Gewinn zukommen lassen können.`
+                : "Glückwunsch zum Gewinn! Wir brauchen nur noch ein paar Daten von dir, damit wir dir den Gewinn zukommen lassen können."}
           </p>
         </header>
 
@@ -575,7 +573,8 @@ export default async function GiveawayRedeemPage({ params, searchParams }) {
                     Gleich geht’s raus zu dir
                   </h2>
                   <p className="text-sm text-muted-foreground">
-                    Einmal Adresse eintragen, dann kümmert sich unser Team zeitnah um alles weitere!
+                    Einmal Adresse eintragen, dann kümmert sich unser Team
+                    zeitnah um alles weitere!
                   </p>
                 </div>
 

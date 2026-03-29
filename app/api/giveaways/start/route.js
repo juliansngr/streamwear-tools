@@ -12,7 +12,7 @@ export async function POST(req) {
     if (!giveawayOrderId) {
       return NextResponse.json(
         { error: "missing giveawayOrderId" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -29,7 +29,7 @@ export async function POST(req) {
     if (orderError || !order) {
       return NextResponse.json(
         { error: "giveaway_order not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -37,7 +37,7 @@ export async function POST(req) {
     const endsAt = new Date(now.getTime() + dur * 1000);
 
     const { data: connector } = await supabaseAdmin
-      .from("shopify_connectors")
+      .from("profiles")
       .select("uuid, twitch_username")
       .eq("uuid", order.streamer_uuid)
       .maybeSingle();
@@ -45,7 +45,7 @@ export async function POST(req) {
     if (!connector) {
       return NextResponse.json(
         { error: "connector not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -85,7 +85,7 @@ export async function POST(req) {
       console.error("giveaways insert error", insertError);
       return NextResponse.json(
         { error: "failed to create giveaway" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
