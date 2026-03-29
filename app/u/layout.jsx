@@ -1,6 +1,5 @@
-"use client";
 import { Topbar } from "@/components/dashboard/Topbar";
-import { Sidebar } from "@/components/dashboard/Sidebar";
+import { SidebarServer } from "@/components/dashboard/SidebarServer";
 import { Toaster } from "sonner";
 
 export default function ULayout({ children }) {
@@ -10,7 +9,7 @@ export default function ULayout({ children }) {
       <Toaster />
       <div className="mx-auto max-w-6xl px-4 py-10">
         <div className="flex gap-6">
-          <Sidebar />
+          <SidebarServer />
           <main className="flex-1">{children}</main>
         </div>
       </div>

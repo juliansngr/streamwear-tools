@@ -2,7 +2,7 @@ import { cloneElement } from "react";
 import { cn } from "@/lib/utils";
 
 export function Button({ className, variant = "default", size = "md", asChild = false, children, ...props }) {
-  const base = "relative isolate inline-flex items-center justify-center overflow-hidden whitespace-nowrap rounded-[var(--radius-sm)] text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0.36,0,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
+  const base = "relative isolate inline-flex items-center justify-center overflow-hidden whitespace-nowrap rounded-[var(--radius-sm)] text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.4,0.36,0,1)] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed";
   const variants = {
     // Leichter Lilac-Gradient, subtile Kontur + Overlay-Highlights
     default:
