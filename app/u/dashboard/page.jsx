@@ -84,7 +84,7 @@ export default async function Dashboard() {
         title={`Hey ${
           profileData?.display_name ? profileData?.display_name : ""
         } 👋`}
-        subtitle="Überblick – kommt bald"
+        subtitle="Überblick"
       />
       <div className="grid gap-6 sm:grid-cols-2">
         <Card className="p-6">
